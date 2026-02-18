@@ -1,26 +1,250 @@
 @import "tailwindcss";
 
+/* ─── Design Tokens ─────────────────────────────────────────────────────────── */
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Color */
+  --color-bg: #fafafa;
+  --color-text: #121212;
+  --color-muted: rgba(18, 18, 18, 0.6);
+  --color-accent: #7a6a4f;
+
+  /* Spacing — multiples of 8px, rhythm unit is 48px */
+  --space-1: 8px;
+  --space-2: 16px;
+  --space-3: 24px;
+  --space-4: 48px;
+  --space-5: 96px;
+  --space-6: 144px;
+
+  /* Motion */
+  --motion-fast: 120ms;
+  --motion-base: 240ms;
+  --motion-slow: 480ms;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in: cubic-bezier(0.7, 0, 0.84, 0);
+
+  /* Typography */
+  --font-primary: var(--font-inter), -apple-system, BlinkMacSystemFont,
+    "Segoe UI", sans-serif;
+
+  /* Type scale */
+  --text-display-xl: 92px;
+  --text-display-l: 64px;
+  --text-heading: 40px;
+  --text-body-l: 18px;
+  --text-body-s: 15px;
+  --text-meta: 12px;
+
+  /* Line heights */
+  --leading-display-xl: 1.05;
+  --leading-display-l: 1.1;
+  --leading-heading: 1.2;
+  --leading-body: 1.6;
+  --leading-meta: 1.4;
+
+  /* Layout */
+  --content-max-width: 1120px;
+  --content-margin-desktop: 160px;
+  --content-margin-tablet: 96px;
+  --content-margin-mobile: 24px;
 }
+
+/* ─── Tailwind theme bridge ──────────────────────────────────────────────────── */
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-inter);
+
+  --color-background: var(--color-bg);
+  --color-foreground: var(--color-text);
+  --color-muted: var(--color-muted);
+  --color-accent: var(--color-accent);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* ─── Base reset ─────────────────────────────────────────────────────────────── */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: auto;
+  text-size-adjust: 100%;
+  /* 2px top accent — silent brand mark. Present on every page. */
+  border-top: 2px solid var(--color-accent);
+}
+
+/* ─── Text selection ─────────────────────────────────────────────────────────── */
+
+::selection {
+  background-color: var(--color-accent);
+  color: #fff;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-primary);
+  font-size: var(--text-body-l);
+  line-height: var(--leading-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ─── Typography base ────────────────────────────────────────────────────────── */
+
+h1,
+h2,
+h3,
+h4 {
+  font-weight: 700;
+  line-height: var(--leading-heading);
+  color: var(--color-text);
+}
+
+p {
+  max-width: 60ch;
+  color: var(--color-text);
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* ─── Utility classes ────────────────────────────────────────────────────────── */
+
+.text-display-xl {
+  font-size: clamp(52px, 6.4vw, var(--text-display-xl));
+  line-height: var(--leading-display-xl);
+  font-weight: 700;
+}
+
+.text-display-l {
+  font-size: clamp(36px, 4.4vw, var(--text-display-l));
+  line-height: var(--leading-display-l);
+  font-weight: 700;
+}
+
+.text-heading {
+  font-size: clamp(28px, 2.8vw, var(--text-heading));
+  line-height: var(--leading-heading);
+  font-weight: 600;
+}
+
+.text-body-l {
+  font-size: var(--text-body-l);
+  line-height: var(--leading-body);
+  font-weight: 400;
+}
+
+.text-body-s {
+  font-size: var(--text-body-s);
+  line-height: var(--leading-body);
+  font-weight: 400;
+}
+
+.text-meta {
+  font-size: var(--text-meta);
+  line-height: var(--leading-meta);
+  font-weight: 500;
+  color: var(--color-muted);
+}
+
+/* ─── Grain texture ──────────────────────────────────────────────────────────── */
+/*
+ * SVG fractalNoise at low opacity adds surface quality to the near-white bg.
+ * Fixed position so it doesn't scroll with content.
+ * Pointer-events-none so it never intercepts interaction.
+ * Opacity at 0.04 — visible as texture, invisible as a distinct element.
+ */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 9997;
+  pointer-events: none;
+  opacity: 0.04;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+  background-size: 200px 200px;
+}
+
+/* ─── Cursor ─────────────────────────────────────────────────────────────────── */
+
+.cursor-dot {
+  pointer-events: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 6px;
+  height: 6px;
+  background-color: var(--color-accent);
+  border-radius: 50%;
+  /* JS sets transform: translate3d(x, y, 0) translate(-50%, -50%) */
+  will-change: transform;
+  opacity: 0;
+  transition: opacity var(--motion-base) var(--ease-out);
+  z-index: 9999;
+}
+
+.cursor-dot.is-visible {
+  opacity: 1;
+}
+
+/* Hide on touch/coarse pointer devices */
+@media (pointer: coarse) {
+  .cursor-dot {
+    display: none;
+  }
+}
+
+/* ─── Form inputs ────────────────────────────────────────────────────────────── */
+
+.field-input {
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid rgba(18, 18, 18, 0.2);
+  padding: var(--space-2) 0;
+  font-family: var(--font-primary);
+  font-size: var(--text-body-l);
+  line-height: var(--leading-body);
+  color: var(--color-text);
+  outline: none;
+  transition: border-color var(--motion-base) var(--ease-out);
+  -webkit-appearance: none;
+  border-radius: 0;
+}
+
+.field-input::placeholder {
+  color: var(--color-muted);
+}
+
+.field-input:focus {
+  border-bottom-color: var(--color-text);
+}
+
+.field-label {
+  display: block;
+  font-size: var(--text-meta);
+  line-height: var(--leading-meta);
+  font-weight: 500;
+  color: var(--color-muted);
+  margin-bottom: var(--space-1);
+}
+
+/* ─── Reduced motion ─────────────────────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
