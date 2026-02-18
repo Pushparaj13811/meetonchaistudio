@@ -34,11 +34,56 @@ function getEnv() {
 
 // ─── Meeting link ──────────────────────────────────────────────────────────────
 
-function generateMeetingLink(date: string, time: string): string {
+/**
+ * Generates a unique Jitsi room URL pre-filled with the booker's display name
+ * and email so they land directly in the room without a name prompt.
+ *
+ * Hash params used:
+ *   userInfo.displayName  — skips the name input on join
+ *   userInfo.email        — shown in participant panel
+ *   config.subject        — meeting title shown in the room header
+ *   config.startWithAudioMuted — muted on entry (polite for a first call)
+ */
+function generateMeetingLink(
+  date: string,
+  time: string,
+  name: string,
+  email: string
+): string {
   const slug = `${date.replace(/-/g, "")}${time.replace(":", "")}-${Math.random()
     .toString(36)
     .slice(2, 8)}`;
-  return `https://meet.jit.si/MeetOnChai-${slug}`;
+
+  const room = `MeetOnChai-${slug}`;
+
+  // Booker-specific hash — pre-fills their name when they click from their email
+  const hash = new URLSearchParams({
+    "userInfo.displayName": name,
+    "userInfo.email": email,
+    "config.subject": "Meet on Chai",
+    "config.startWithAudioMuted": "true",
+  }).toString();
+
+  // Base URL carries the room; hash carries user context
+  // The studio clicks from their email without hash params (different link below)
+  return `https://meet.jit.si/${room}#${hash}`;
+}
+
+/**
+ * Studio-side link: same room, pre-filled with the studio owner's name.
+ * STUDIO_NAME env var — defaults to "Meet on Chai".
+ */
+function generateStudioMeetingLink(bookerLink: string): string {
+  const roomUrl = bookerLink.split("#")[0]; // strip booker hash
+  const studioName = process.env.STUDIO_NAME ?? "Meet on Chai";
+
+  const hash = new URLSearchParams({
+    "userInfo.displayName": studioName,
+    "config.subject": "Meet on Chai",
+    "config.startWithAudioMuted": "true",
+  }).toString();
+
+  return `${roomUrl}#${hash}`;
 }
 
 // ─── Format helpers ────────────────────────────────────────────────────────────
@@ -369,8 +414,12 @@ export async function bookSlot(
       error: "That slot was just taken. Please choose another time.",
     };
 
-  // Generate meeting link before persisting so it's stored with the booking
-  const meetingLink = generateMeetingLink(date, time);
+  // Generate meeting links — booker link pre-fills their name, studio link pre-fills yours
+  const bookerMeetingLink = generateMeetingLink(date, time, name, email);
+  const studioMeetingLink = generateStudioMeetingLink(bookerMeetingLink);
+
+  // Store the base room URL (without hash) so it's portable
+  const meetingLink = bookerMeetingLink;
 
   await addBooking({ name, email, date, time, message: message || undefined, meetingLink });
 
@@ -383,16 +432,16 @@ export async function bookSlot(
       to: TO,
       replyTo: email,
       subject: `New booking — ${name} on ${formatDate(date)} at ${formatTime(time)}`,
-      html: studioBookingHtml({ name, email, date, time, message: message || undefined, meetingLink }),
-      text: `New booking\n\nName: ${name}\nEmail: ${email}\nDate: ${date}\nTime: ${time}\n${message ? `\nContext:\n${message}` : ""}\n\nMeeting link: ${meetingLink}`,
+      html: studioBookingHtml({ name, email, date, time, message: message || undefined, meetingLink: studioMeetingLink }),
+      text: `New booking\n\nName: ${name}\nEmail: ${email}\nDate: ${date}\nTime: ${time}\n${message ? `\nContext:\n${message}` : ""}\n\nYour join link (name pre-filled): ${studioMeetingLink}`,
     });
 
     const userConfirmation = resend.emails.send({
       from: FROM,
       to: email,
       subject: `Your chai is booked — ${formatDate(date)} at ${formatTime(time)}`,
-      html: bookingConfirmationHtml({ name, date, time, meetingLink }),
-      text: `Hi ${name},\n\nYour slot is booked: ${date} at ${time}.\n\nJoin the call: ${meetingLink}\n\nCan't make it? Reply to this email.\n\n— Meet on Chai`,
+      html: bookingConfirmationHtml({ name, date, time, meetingLink: bookerMeetingLink }),
+      text: `Hi ${name},\n\nYour slot is booked: ${date} at ${time}.\n\nJoin the call (your name is pre-filled): ${bookerMeetingLink}\n\nCan't make it? Reply to this email.\n\n— Meet on Chai`,
     });
 
     const [n, u] = await Promise.all([studioNotification, userConfirmation]);
