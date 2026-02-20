@@ -13,7 +13,7 @@ const projects = [
     link: "https://oryizon.com",
     label: "Visit Website",
     external: true,
-    image: "/projects/oryizon.png",
+    image: "/projects/oryizon.webp",
     offset: "",
   },
   // {

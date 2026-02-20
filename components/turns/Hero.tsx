@@ -200,7 +200,7 @@ export default function Hero() {
               <div className="bg-glow" />
               <div className="animate-float">
                 <ResponsiveImage
-                  src="/hero.png"
+                  src="/hero.webp"
                   alt="MeetOnChai Hero Visual"
                   width={1920}
                   height={1434}

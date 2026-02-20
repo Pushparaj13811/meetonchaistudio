@@ -1,27 +1,42 @@
 import type { Metadata } from "next";
+import dynamic from "next/dynamic";
 import { Inter, Outfit } from "next/font/google";
-import { CursorDot } from "@/components/ui/CursorDot";
 import { ToastProvider } from "@/components/ui/Toast";
-import { ScrollProgress } from "@/components/ui/ScrollProgress";
-import { BackToTop } from "@/components/ui/BackToTop";
 import { SkipToContent } from "@/components/ui/SkipToContent";
-import { CookieConsent } from "@/components/ui/CookieConsent";
 import { GoogleAnalytics } from "@/components/analytics/GoogleAnalytics";
 import { ThemeProvider } from "@/lib/theme-context";
 import "./globals.css";
 
+// Lazy load non-critical UI components
+const CursorDot = dynamic(() => import("@/components/ui/CursorDot").then(mod => ({ default: mod.CursorDot })), {
+  ssr: false,
+});
+const ScrollProgress = dynamic(() => import("@/components/ui/ScrollProgress").then(mod => ({ default: mod.ScrollProgress })), {
+  ssr: false,
+});
+const BackToTop = dynamic(() => import("@/components/ui/BackToTop").then(mod => ({ default: mod.BackToTop })), {
+  ssr: false,
+});
+const CookieConsent = dynamic(() => import("@/components/ui/CookieConsent").then(mod => ({ default: mod.CookieConsent })), {
+  ssr: false,
+});
+
 const inter = Inter({
   subsets: ["latin"],
-  weight: ["400", "500", "600"],
+  weight: ["400", "600"],
   variable: "--font-inter",
   display: "swap",
+  preload: true,
+  fallback: ["system-ui", "arial"],
 });
 
 const outfit = Outfit({
   subsets: ["latin"],
-  weight: ["400", "600", "800", "900"],
+  weight: ["600", "800"],
   variable: "--font-outfit",
   display: "swap",
+  preload: true,
+  fallback: ["system-ui", "arial"],
 });
 
 export const metadata: Metadata = {
@@ -106,6 +121,8 @@ export default function RootLayout({
   return (
     <html lang="en" className="scroll-smooth" suppressHydrationWarning>
       <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <script
           dangerouslySetInnerHTML={{
             __html: `

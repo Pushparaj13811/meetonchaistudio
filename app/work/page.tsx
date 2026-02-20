@@ -16,7 +16,7 @@ const caseStudies = [
     link: "https://oryizon.com",
     label: "Visit Website",
     external: true,
-    image: "/projects/oryizon.png",
+    image: "/projects/oryizon.webp",
     tags: ["E-Commerce", "Payment Gateway", "Inventory Management"],
   },
   // {
@@ -36,7 +36,7 @@ const caseStudies = [
     link: "https://unipay.hpm.com.np",
     label: "View Project",
     external: true,
-    image: "/projects/unipay.png",
+    image: "/projects/unipay.webp",
     tags: ["Payment Gateway", "API Integration", "Developer Tools"],
   },
   {
@@ -46,7 +46,7 @@ const caseStudies = [
     link: "https://okcss.hpm.com.np",
     label: "Visit Website",
     external: true,
-    image: "/projects/okcss.png",
+    image: "/projects/okcss.webp",
     tags: ["CSS Tools", "Developer Tools", "Code Generator"],
   },
 ];
