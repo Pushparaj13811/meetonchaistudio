@@ -10,10 +10,12 @@
   },
   "dependencies": {
     "framer-motion": "^12.34.1",
+    "lucide-react": "^0.575.0",
     "next": "16.1.6",
     "react": "19.2.3",
     "react-dom": "19.2.3",
-    "resend": "^6.9.2"
+    "resend": "^6.9.2",
+    "tech-stack-icons": "^3.5.8"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",

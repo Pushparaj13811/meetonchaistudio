@@ -1,0 +1,9 @@
+# *
+User-agent: *
+Allow: /
+
+# Host
+Host: https://meetonchai.com
+
+# Sitemaps
+Sitemap: https://meetonchai.com/sitemap.xml

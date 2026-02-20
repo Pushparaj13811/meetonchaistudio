@@ -1,108 +1,238 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { ContentContainer } from "@/components/layout/ContentContainer";
-import { CTALink } from "@/components/ui/CTALink";
-import {
-  fadeUp,
-  fadeUpTransition,
-  viewportOnce,
-  fadeUpDelayed,
-} from "@/lib/motion";
-
 /**
- * Turn 7 — Close
+ * Footer
  *
- * No pressure. The phrasing "if this feels like your pace" qualifies
- * the invitation — it is extended to those for whom the preceding
- * six turns were a match, not to everyone.
- *
- * "Book a 15-minute chai" is specific and named in the studio's own language.
- * 15 minutes is a small commitment. It reads as an offer, not a demand.
- *
- * Footer: single line, meta text. Nothing decorative.
+ * Footer with branding, contact info, and links
  */
-export default function TurnSeven() {
+export default function Footer() {
   return (
-    <>
-      <section
+    <footer
+      style={{
+        borderTop: "1px solid var(--color-border)",
+        paddingTop: "var(--space-5)",
+        paddingBottom: "var(--space-5)",
+      }}
+      className="footer-section"
+    >
+      <div
         style={{
-          paddingTop: "var(--space-5)",
-          paddingBottom: "var(--space-5)",
+          maxWidth: "1280px",
+          margin: "0 auto",
+          padding: "0 var(--space-3)",
         }}
       >
-        <ContentContainer>
-          {/* Close statement */}
-          <motion.h2
-            className="text-heading"
-            variants={fadeUp}
-            initial="hidden"
-            whileInView="visible"
-            viewport={viewportOnce}
-            transition={fadeUpTransition}
-            style={{
-              color: "var(--color-text)",
-              maxWidth: "560px",
-              fontWeight: 600,
-            }}
-          >
-            If this feels like your pace, let&apos;s talk.
-          </motion.h2>
-
-          {/* CTA */}
-          <motion.div
-            variants={fadeUp}
-            initial="hidden"
-            whileInView="visible"
-            viewport={viewportOnce}
-            transition={fadeUpDelayed(160)}
-            style={{ marginTop: "var(--space-4)" }}
-          >
-            <CTALink href="/talk">
-              Book a 15-minute chai
-            </CTALink>
-          </motion.div>
-        </ContentContainer>
-      </section>
-
-      {/* Footer — single line, meta text, no decoration */}
-      <footer
-        style={{
-          paddingTop: "var(--space-4)",
-          paddingBottom: "var(--space-4)",
-          borderTop: "1px solid rgba(18, 18, 18, 0.08)",
-        }}
-      >
-        <ContentContainer
+        <div
           style={{
             display: "flex",
+            flexDirection: "column",
+            gap: "var(--space-4)",
             alignItems: "center",
             justifyContent: "space-between",
-            gap: "var(--space-3)",
-            flexWrap: "wrap",
           }}
+          className="footer-content"
         >
-          <span className="text-meta">Meet on Chai</span>
-          <a
-            href="mailto:hello@meetonchai.com"
-            className="text-meta"
+          {/* Branding & Contact */}
+          <div style={{ textAlign: "center" }} className="footer-brand">
+            <div style={{ marginBottom: "var(--space-2)" }}>
+              <span
+                style={{
+                  fontFamily: "var(--font-heading)",
+                  fontWeight: 800,
+                  fontSize: "1.25rem",
+                  color: "var(--color-text)",
+                }}
+              >
+                MeetOn<span style={{ color: "var(--color-accent)" }}>Chai</span>
+              </span>
+              <span
+                style={{
+                  fontSize: "0.875rem",
+                  color: "#a8adb5",
+                  marginLeft: "var(--space-2)",
+                }}
+              >
+                © 2026 Studio.
+              </span>
+            </div>
+
+            {/* Contact Info */}
+            <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-1)", alignItems: "center" }}>
+              <a
+                href="mailto:hello@meetonchai.com"
+                style={{
+                  fontSize: "0.875rem",
+                  color: "var(--color-text-secondary)",
+                  transition: "color var(--motion-base) var(--ease-out)",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.color = "var(--color-accent)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.color = "#9ca3af";
+                }}
+              >
+                hello@meetonchai.com
+              </a>
+              <div style={{ display: "flex", gap: "var(--space-2)", fontSize: "0.875rem", color: "var(--color-text-secondary)", flexWrap: "wrap", justifyContent: "center" }}>
+                <a
+                  href="tel:+9779804301484"
+                  style={{
+                    color: "var(--color-text-secondary)",
+                    transition: "color var(--motion-base) var(--ease-out)",
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.color = "var(--color-accent)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.color = "#9ca3af";
+                  }}
+                >
+                  +977 9804301484
+                </a>
+                <span>·</span>
+                <a
+                  href="tel:+917635022185"
+                  style={{
+                    color: "var(--color-text-secondary)",
+                    transition: "color var(--motion-base) var(--ease-out)",
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.color = "var(--color-accent)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.color = "#9ca3af";
+                  }}
+                >
+                  +91 7635022185
+                </a>
+              </div>
+            </div>
+          </div>
+
+          {/* Links */}
+          <div
             style={{
-              color: "var(--color-muted)",
-              transition: "color var(--motion-base) var(--ease-out)",
+              display: "flex",
+              flexWrap: "wrap",
+              justifyContent: "center",
+              gap: "var(--space-3)",
             }}
-            onMouseEnter={(e) => {
-              (e.currentTarget as HTMLAnchorElement).style.color =
-                "var(--color-text)";
-            }}
-            onMouseLeave={(e) => {
-              (e.currentTarget as HTMLAnchorElement).style.color =
-                "var(--color-muted)";
-            }}
+            className="footer-links"
           >
-            hello@meetonchai.com
-          </a>
-        </ContentContainer>
-      </footer>
-    </>
+            <a
+              href="/about"
+              style={{
+                fontSize: "0.875rem",
+                color: "var(--color-text-secondary)",
+                transition: "color var(--motion-base) var(--ease-out)",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.color = "var(--color-accent)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.color = "#9ca3af";
+              }}
+            >
+              About
+            </a>
+            <a
+              href="/privacy"
+              style={{
+                fontSize: "0.875rem",
+                color: "var(--color-text-secondary)",
+                transition: "color var(--motion-base) var(--ease-out)",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.color = "var(--color-accent)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.color = "#9ca3af";
+              }}
+            >
+              Privacy Policy
+            </a>
+            <a
+              href="/terms"
+              style={{
+                fontSize: "0.875rem",
+                color: "var(--color-text-secondary)",
+                transition: "color var(--motion-base) var(--ease-out)",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.color = "var(--color-accent)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.color = "#9ca3af";
+              }}
+            >
+              Terms of Service
+            </a>
+            <a
+              href="#"
+              style={{
+                fontSize: "0.875rem",
+                color: "var(--color-text-secondary)",
+                transition: "color var(--motion-base) var(--ease-out)",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.color = "var(--color-accent)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.color = "#9ca3af";
+              }}
+            >
+              LinkedIn
+            </a>
+            <a
+              href="#"
+              style={{
+                fontSize: "0.875rem",
+                color: "var(--color-text-secondary)",
+                transition: "color var(--motion-base) var(--ease-out)",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.color = "var(--color-accent)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.color = "#9ca3af";
+              }}
+            >
+              Dribbble
+            </a>
+            <a
+              href="#"
+              style={{
+                fontSize: "0.875rem",
+                color: "var(--color-text-secondary)",
+                transition: "color var(--motion-base) var(--ease-out)",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.color = "var(--color-accent)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.color = "#9ca3af";
+              }}
+            >
+              GitHub
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <style jsx>{`
+        @media (min-width: 768px) {
+          .footer-content {
+            flex-direction: row !important;
+          }
+          .footer-brand {
+            text-align: left !important;
+          }
+          .footer-links {
+            gap: var(--space-4) !important;
+          }
+        }
+      `}</style>
+    </footer>
   );
 }
