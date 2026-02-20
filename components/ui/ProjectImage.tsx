@@ -32,37 +32,21 @@ export function ProjectImage({ src, alt, className }: ProjectImageProps) {
   const basePath = src.replace(/\.[^/.]+$/, "");
 
   return (
-    <picture>
-      {/* WebP sources for different screen sizes */}
-      <source
-        media="(max-width: 640px)"
-        srcSet={`${basePath}-small.webp`}
-        type="image/webp"
-      />
-      <source
-        media="(max-width: 1024px)"
-        srcSet={`${basePath}-medium.webp`}
-        type="image/webp"
-      />
-      <source
-        srcSet={`${basePath}.webp`}
-        type="image/webp"
-      />
-
-      {/* Fallback */}
-      <Image
-        src={src}
-        alt={alt}
-        width={800}
-        height={600}
-        quality={quality}
-        className={className}
-        style={{
-          width: "100%",
-          height: "100%",
-          objectFit: "cover",
-        }}
-      />
-    </picture>
+    <Image
+      src={`${basePath}.webp`}
+      alt={alt}
+      width={800}
+      height={600}
+      quality={quality}
+      className={className}
+      sizes="(max-width: 640px) 640px, (max-width: 1024px) 1024px, 800px"
+      placeholder="blur"
+      blurDataURL="data:image/webp;base64,UklGRiQAAABXRUJQVlA4IBgAAAAwAQCdASoBAAEAAwA0JaQAA3AA/vuUAAA="
+      style={{
+        width: "100%",
+        height: "100%",
+        objectFit: "cover",
+      }}
+    />
   );
 }

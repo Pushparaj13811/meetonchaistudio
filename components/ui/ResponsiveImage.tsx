@@ -45,24 +45,17 @@ export function ResponsiveImage({
   const ext = src.split('.').pop();
 
   return (
-    <picture>
-      {/* Modern formats for supported browsers */}
-      <source
-        srcSet={`${baseSrc}.webp`}
-        type="image/webp"
-      />
-
-      {/* Fallback to original format */}
-      <Image
-        src={src}
-        alt={alt}
-        width={width}
-        height={height}
-        className={className}
-        priority={priority}
-        quality={quality}
-        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-      />
-    </picture>
+    <Image
+      src={`${baseSrc}.webp`}
+      alt={alt}
+      width={width}
+      height={height}
+      className={className}
+      priority={priority}
+      quality={quality}
+      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+      placeholder="blur"
+      blurDataURL="data:image/webp;base64,UklGRiQAAABXRUJQVlA4IBgAAAAwAQCdASoBAAEAAwA0JaQAA3AA/vuUAAA="
+    />
   );
 }

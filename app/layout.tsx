@@ -1,42 +1,30 @@
 import type { Metadata } from "next";
-import dynamic from "next/dynamic";
 import { Inter, Outfit } from "next/font/google";
 import { ToastProvider } from "@/components/ui/Toast";
 import { SkipToContent } from "@/components/ui/SkipToContent";
 import { GoogleAnalytics } from "@/components/analytics/GoogleAnalytics";
 import { ThemeProvider } from "@/lib/theme-context";
+import { ClientOnlyComponents } from "@/components/layout/ClientOnlyComponents";
 import "./globals.css";
-
-// Lazy load non-critical UI components
-const CursorDot = dynamic(() => import("@/components/ui/CursorDot").then(mod => ({ default: mod.CursorDot })), {
-  ssr: false,
-});
-const ScrollProgress = dynamic(() => import("@/components/ui/ScrollProgress").then(mod => ({ default: mod.ScrollProgress })), {
-  ssr: false,
-});
-const BackToTop = dynamic(() => import("@/components/ui/BackToTop").then(mod => ({ default: mod.BackToTop })), {
-  ssr: false,
-});
-const CookieConsent = dynamic(() => import("@/components/ui/CookieConsent").then(mod => ({ default: mod.CookieConsent })), {
-  ssr: false,
-});
 
 const inter = Inter({
   subsets: ["latin"],
   weight: ["400", "600"],
   variable: "--font-inter",
-  display: "swap",
+  display: "optional",
   preload: true,
   fallback: ["system-ui", "arial"],
+  adjustFontFallback: true,
 });
 
 const outfit = Outfit({
   subsets: ["latin"],
   weight: ["600", "800"],
   variable: "--font-outfit",
-  display: "swap",
+  display: "optional",
   preload: true,
   fallback: ["system-ui", "arial"],
+  adjustFontFallback: true,
 });
 
 export const metadata: Metadata = {
@@ -144,11 +132,8 @@ export default function RootLayout({
         <ThemeProvider>
           <SkipToContent />
           <ToastProvider>
-            <ScrollProgress />
-            <CursorDot />
+            <ClientOnlyComponents />
             {children}
-            <BackToTop />
-            <CookieConsent />
           </ToastProvider>
         </ThemeProvider>
       </body>
