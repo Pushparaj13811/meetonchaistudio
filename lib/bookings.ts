@@ -23,6 +23,8 @@ export interface Booking {
   message?: string;
   meetingLink: string; // Jitsi room URL
   createdAt: string;   // ISO timestamp
+  cancelled?: boolean; // true if booking was cancelled
+  cancelledAt?: string; // ISO timestamp of cancellation
 }
 
 // ─── Path resolution ──────────────────────────────────────────────────────────
@@ -59,12 +61,13 @@ async function writeBookings(bookings: Booking[]): Promise<void> {
 
 /**
  * Returns all time strings already booked on a given date.
+ * Excludes cancelled bookings.
  * e.g. ["09:00", "14:00"]
  */
 export async function getBookedTimesForDate(date: string): Promise<string[]> {
   const bookings = await readBookings();
   return bookings
-    .filter((b) => b.date === date)
+    .filter((b) => b.date === date && !b.cancelled)
     .map((b) => b.time);
 }
 
@@ -93,4 +96,30 @@ export async function addBooking(
   bookings.push(newBooking);
   await writeBookings(bookings);
   return newBooking;
+}
+
+/**
+ * Retrieves a booking by its ID.
+ */
+export async function getBookingById(id: string): Promise<Booking | null> {
+  const bookings = await readBookings();
+  return bookings.find((b) => b.id === id) ?? null;
+}
+
+/**
+ * Cancels a booking by marking it as cancelled.
+ * Returns the updated booking, or null if not found.
+ */
+export async function cancelBooking(id: string): Promise<Booking | null> {
+  const bookings = await readBookings();
+  const index = bookings.findIndex((b) => b.id === id);
+
+  if (index === -1) return null;
+  if (bookings[index].cancelled) return bookings[index]; // Already cancelled
+
+  bookings[index].cancelled = true;
+  bookings[index].cancelledAt = new Date().toISOString();
+
+  await writeBookings(bookings);
+  return bookings[index];
 }

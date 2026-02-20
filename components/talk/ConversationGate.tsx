@@ -104,10 +104,16 @@ export function ConversationGate() {
               transition={{ duration: 0.48, ease: [0.16, 1, 0.3, 1] }}
             >
               <p
-                className="text-display-l"
-                style={{ color: "var(--color-text)", marginBottom: "var(--space-3)" }}
+                style={{
+                  fontFamily: "var(--font-heading)",
+                  fontSize: "clamp(2rem, 4vw, 3rem)",
+                  fontWeight: 800,
+                  color: "var(--color-text)",
+                  marginBottom: "var(--space-3)",
+                  lineHeight: 1.2,
+                }}
               >
-                Your chai is booked.
+                Your chai is <span className="text-gradient">booked</span> ☕
               </p>
 
               {/* Slot summary */}
@@ -165,10 +171,16 @@ export function ConversationGate() {
               transition={{ duration: 0.48, ease: [0.16, 1, 0.3, 1] }}
             >
               <p
-                className="text-display-l"
-                style={{ color: "var(--color-text)", marginBottom: "var(--space-3)" }}
+                style={{
+                  fontFamily: "var(--font-heading)",
+                  fontSize: "clamp(2rem, 4vw, 3rem)",
+                  fontWeight: 800,
+                  color: "var(--color-text)",
+                  marginBottom: "var(--space-3)",
+                  lineHeight: 1.2,
+                }}
               >
-                Your chai is brewing.
+                Your chai is <span className="text-gradient">brewing</span> ☕
               </p>
               <p
                 className="text-body-l"
@@ -189,33 +201,36 @@ export function ConversationGate() {
               transition={{ duration: 0.3 }}
             >
               <motion.h1
-                className="text-display-l"
                 variants={fadeIn}
                 initial="initial"
                 animate="animate"
                 transition={{ ...fadeInTransition, delay: 0.15 }}
                 style={{
+                  fontFamily: "var(--font-heading)",
+                  fontSize: "clamp(2.5rem, 5vw, 3.75rem)",
+                  fontWeight: 900,
                   color: "var(--color-text)",
                   marginBottom: "var(--space-3)",
+                  lineHeight: 1.1,
                 }}
               >
-                Let&apos;s talk it through.
+                Let&apos;s grab a <span className="text-gradient">chai</span> ☕
               </motion.h1>
 
               <motion.p
-                className="text-body-l"
                 variants={fadeIn}
                 initial="initial"
                 animate="animate"
                 transition={{ ...fadeInTransition, delay: 0.25 }}
                 style={{
-                  maxWidth: "44ch",
-                  color: "var(--color-text)",
+                  maxWidth: "560px",
+                  fontSize: "1.125rem",
+                  lineHeight: 1.6,
+                  color: "var(--color-text-secondary)",
                   marginBottom: "var(--space-5)",
                 }}
               >
-                Before we build anything, we prefer to understand what&apos;s
-                actually going on.
+                15 minutes to discuss your project, completely free. No sales pitch — just an honest conversation about what you&apos;re building and how we can help.
               </motion.p>
 
               {/* Primary + secondary CTAs */}
@@ -301,15 +316,33 @@ export function ConversationGate() {
               exit={{ opacity: 0 }}
               transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
             >
-              <p
-                className="text-body-l"
-                style={{
-                  color: "var(--color-text)",
-                  marginBottom: "var(--space-4)",
-                }}
-              >
-                Pick a time that works.
-              </p>
+              <div style={{ marginBottom: "var(--space-4)" }}>
+                <button
+                  type="button"
+                  onClick={() => setGate("idle")}
+                  style={{
+                    background: "none",
+                    border: "none",
+                    cursor: "pointer",
+                    padding: "var(--space-1)",
+                    marginBottom: "var(--space-2)",
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: "var(--space-1)",
+                    fontSize: "0.875rem",
+                    color: "var(--color-text-secondary)",
+                    transition: "color var(--motion-base) var(--ease-out)",
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.color = "var(--color-text)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.color = "#9ca3af";
+                  }}
+                >
+                  ← Back
+                </button>
+              </div>
 
               <BookingCalendar
                 onSuccess={(data) => {

@@ -6,9 +6,16 @@ import { bookSlot, type FormState, type BookingConfirmation } from "@/app/talk/a
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
-const OFFERED_TIMES = ["09:00", "10:00", "11:00", "14:00", "15:00", "16:00"];
+// Display times in 12-hour format for UI, but store in 24-hour format
+const OFFERED_TIMES = [
+  { display: "10:00 AM", value: "10:00" },
+  { display: "11:30 AM", value: "11:30" },
+  { display: "1:00 PM", value: "13:00" },
+  { display: "2:30 PM", value: "14:30" },
+  { display: "4:00 PM", value: "16:00" },
+];
 
-const DAY_LABELS = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"];
+const DAY_LABELS = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
 
 const MONTH_NAMES = [
   "January", "February", "March", "April", "May", "June",
@@ -39,12 +46,11 @@ function isSameDay(a: Date, b: Date): boolean {
   );
 }
 
-/** First Monday on or before the 1st of the given month/year */
+/** First day of calendar grid (starts on Sunday) */
 function calendarStart(year: number, month: number): Date {
   const first = new Date(year, month, 1);
-  const dow = first.getDay(); // 0=Sun … 6=Sat
-  const offset = dow === 0 ? 6 : dow - 1; // steps back to Mon
-  return new Date(year, month, 1 - offset);
+  const dow = first.getDay(); // 0=Sun
+  return new Date(year, month, 1 - dow);
 }
 
 /** 42 cells = 6 rows × 7 cols */
@@ -59,19 +65,6 @@ function buildCalendarGrid(year: number, month: number): Date[] {
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
-/**
- * BookingCalendar
- *
- * Three internal stages:
- *   calendar → timeslots → form
- *
- * Flow:
- *   1. Calendar — pick a date (weekdays, not past, within 4 weeks)
- *   2. Time slots — fetched from /api/slots, booked ones greyed out
- *   3. Booking form — name, email, optional context; hidden date+time inputs
- *
- * On successful submit, parent receives onSuccess() callback.
- */
 interface BookingCalendarProps {
   onSuccess: (booking: BookingConfirmation) => void;
   onCancel: () => void;
@@ -95,13 +88,10 @@ export function BookingCalendar({ onSuccess, onCancel }: BookingCalendarProps) {
   const [bookedTimes, setBookedTimes] = useState<string[]>([]);
   const [loadingSlots, setLoadingSlots] = useState(false);
 
-  // ── Stage ───────────────────────────────────────────────────────────────────
-  const [stage, setStage] = useState<Stage>("calendar");
-
   // ── Form state ──────────────────────────────────────────────────────────────
   const [formState, formAction, isPending] = useActionState(bookSlot, initialState);
 
-  // Advance to success when form submits OK — pass booking data up
+  // Advance to success when form submits OK
   useEffect(() => {
     if (formState.ok && formState.booking) {
       onSuccess(formState.booking);
@@ -110,7 +100,7 @@ export function BookingCalendar({ onSuccess, onCancel }: BookingCalendarProps) {
 
   // ── Date availability ────────────────────────────────────────────────────────
   const maxDate = new Date(today);
-  maxDate.setDate(today.getDate() + 28); // 4 weeks out
+  maxDate.setDate(today.getDate() + 28);
 
   function isDateSelectable(d: Date): boolean {
     return (
@@ -127,7 +117,6 @@ export function BookingCalendar({ onSuccess, onCancel }: BookingCalendarProps) {
     setSelectedDate(d);
     setSelectedTime(null);
     setLoadingSlots(true);
-    setStage("times");
 
     try {
       const res = await fetch(`/api/slots?date=${toDateString(d)}`);
@@ -140,459 +129,492 @@ export function BookingCalendar({ onSuccess, onCancel }: BookingCalendarProps) {
     }
   }
 
-  function handleTimeClick(t: string) {
-    if (bookedTimes.includes(t)) return;
-    setSelectedTime(t);
-    setStage("form");
+  function handleTimeClick(timeValue: string) {
+    // No need to check bookedTimes since we only show available slots
+    setSelectedTime(timeValue);
   }
 
   // ── Month navigation ─────────────────────────────────────────────────────────
-  const isAtCurrentMonth =
-    viewYear === today.getFullYear() && viewMonth === today.getMonth();
-
   function prevMonth() {
-    if (isAtCurrentMonth) return;
-    if (viewMonth === 0) { setViewYear(y => y - 1); setViewMonth(11); }
-    else setViewMonth(m => m - 1);
+    if (viewMonth === 0) {
+      setViewYear((y) => y - 1);
+      setViewMonth(11);
+    } else {
+      setViewMonth((m) => m - 1);
+    }
   }
 
   function nextMonth() {
-    if (viewMonth === 11) { setViewYear(y => y + 1); setViewMonth(0); }
-    else setViewMonth(m => m + 1);
+    if (viewMonth === 11) {
+      setViewYear((y) => y + 1);
+      setViewMonth(0);
+    } else {
+      setViewMonth((m) => m + 1);
+    }
   }
 
   // ── Render helpers ───────────────────────────────────────────────────────────
   const grid = buildCalendarGrid(viewYear, viewMonth);
 
   return (
-    <div style={{ maxWidth: "480px" }}>
-      <AnimatePresence mode="wait">
+    <div
+      className="glass-card booking-calendar-card"
+      style={{
+        padding: "var(--space-4)",
+        borderRadius: "24px",
+      }}
+    >
+      <h3
+        style={{
+          fontFamily: "var(--font-heading)",
+          fontSize: "1.5rem",
+          fontWeight: 800,
+          marginBottom: "var(--space-3)",
+          color: "var(--color-text)",
+        }}
+      >
+        Book a 15-minute chai
+      </h3>
 
-        {/* ── Stage: calendar ───────────────────────────────────────── */}
-        {stage === "calendar" && (
-          <motion.div
-            key="calendar"
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -6 }}
-            transition={{ duration: 0.32, ease: [0.16, 1, 0.3, 1] }}
+      {/* Calendar Header */}
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          marginBottom: "var(--space-3)",
+        }}
+      >
+        <button
+          type="button"
+          onClick={prevMonth}
+          className="calendar-nav-button"
+          style={{
+            background: "none",
+            border: "none",
+            cursor: "pointer",
+            padding: "var(--space-1)",
+            color: "var(--color-text-secondary)",
+            transition: "all var(--motion-base) var(--ease-out)",
+            borderRadius: "9999px",
+          }}
+        >
+          <svg
+            className="w-5 h-5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
           >
-            {/* Month header */}
-            <div
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M15 19l-7-7 7-7"
+            />
+          </svg>
+        </button>
+
+        <span
+          style={{
+            fontWeight: 600,
+            fontSize: "1.125rem",
+            color: "var(--color-text)",
+          }}
+        >
+          {MONTH_NAMES[viewMonth]} {viewYear}
+        </span>
+
+        <button
+          type="button"
+          onClick={nextMonth}
+          className="calendar-nav-button"
+          style={{
+            background: "none",
+            border: "none",
+            cursor: "pointer",
+            padding: "var(--space-1)",
+            color: "var(--color-text-secondary)",
+            transition: "all var(--motion-base) var(--ease-out)",
+            borderRadius: "9999px",
+          }}
+        >
+          <svg
+            className="w-5 h-5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M9 5l7 7-7 7"
+            />
+          </svg>
+        </button>
+      </div>
+
+      {/* Days of Week */}
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(7, 1fr)",
+          gap: "var(--space-1)",
+          marginBottom: "var(--space-1)",
+          textAlign: "center",
+        }}
+      >
+        {DAY_LABELS.map((d) => (
+          <div
+            key={d}
+            style={{
+              fontSize: "0.875rem",
+              fontWeight: 500,
+              color: "var(--color-muted)",
+            }}
+          >
+            {d}
+          </div>
+        ))}
+      </div>
+
+      {/* Calendar Grid */}
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(7, 1fr)",
+          gap: "var(--space-1)",
+          marginBottom: "var(--space-3)",
+        }}
+      >
+        {grid.map((d, i) => {
+          const inMonth = d.getMonth() === viewMonth;
+          const selectable = isDateSelectable(d);
+          const isToday = isSameDay(d, today);
+          const isSelected = selectedDate ? isSameDay(d, selectedDate) : false;
+          const isPast = d < today;
+
+          return (
+            <button
+              key={i}
+              type="button"
+              onClick={() => handleDateClick(d)}
+              disabled={!selectable}
               style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                marginBottom: "var(--space-3)",
+                background: isSelected ? "var(--color-accent)" : "none",
+                border: "none",
+                borderRadius: "8px",
+                cursor: selectable ? "pointer" : "not-allowed",
+                padding: "var(--space-1)",
+                fontFamily: "var(--font-primary)",
+                fontSize: "0.875rem",
+                fontWeight: isSelected ? 700 : 500,
+                color: isSelected
+                  ? "#fff"
+                  : !inMonth || isPast
+                  ? "#4b5563"
+                  : "var(--color-text)",
+                transition: "all var(--motion-base) var(--ease-out)",
+                boxShadow: isSelected
+                  ? "0 0 10px rgba(230, 126, 34, 0.5)"
+                  : "none",
+              }}
+              onMouseEnter={(e) => {
+                if (selectable && !isSelected) {
+                  e.currentTarget.style.background = "rgba(255, 255, 255, 0.05)";
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (selectable && !isSelected) {
+                  e.currentTarget.style.background = "none";
+                }
               }}
             >
-              <button
-                type="button"
-                onClick={prevMonth}
-                disabled={isAtCurrentMonth}
-                style={{
-                  background: "none", border: "none", cursor: isAtCurrentMonth ? "default" : "pointer",
-                  padding: "4px 8px", fontFamily: "var(--font-primary)",
-                  fontSize: "var(--text-meta)", color: isAtCurrentMonth ? "var(--color-muted)" : "var(--color-text)",
-                  opacity: isAtCurrentMonth ? 0.3 : 1,
-                  transition: "opacity var(--motion-base) var(--ease-out)",
-                }}
-                aria-label="Previous month"
-              >
-                ←
-              </button>
+              {d.getDate()}
+            </button>
+          );
+        })}
+      </div>
 
-              <span
-                className="text-meta"
-                style={{ fontWeight: 500, color: "var(--color-text)" }}
-              >
-                {MONTH_NAMES[viewMonth]} {viewYear}
-              </span>
-
-              <button
-                type="button"
-                onClick={nextMonth}
-                style={{
-                  background: "none", border: "none", cursor: "pointer",
-                  padding: "4px 8px", fontFamily: "var(--font-primary)",
-                  fontSize: "var(--text-meta)", color: "var(--color-text)",
-                  transition: "opacity var(--motion-base) var(--ease-out)",
-                }}
-                aria-label="Next month"
-              >
-                →
-              </button>
-            </div>
-
-            {/* Day-of-week header */}
-            <div
+      {/* Time Slots Container */}
+      <AnimatePresence>
+        {selectedDate && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+            style={{
+              paddingTop: "var(--space-3)",
+              borderTop: "1px solid rgba(255, 255, 255, 0.1)",
+            }}
+          >
+            <h4
               style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(7, 1fr)",
-                gap: "2px",
-                marginBottom: "var(--space-1)",
+                fontSize: "0.875rem",
+                fontWeight: 500,
+                color: "var(--color-text-secondary)",
+                marginBottom: "var(--space-2)",
               }}
             >
-              {DAY_LABELS.map((d) => (
-                <div
-                  key={d}
-                  className="text-meta"
-                  style={{
-                    textAlign: "center",
-                    color: "var(--color-muted)",
-                    paddingBottom: "4px",
-                  }}
-                >
-                  {d}
-                </div>
-              ))}
-            </div>
-
-            {/* Calendar grid */}
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(7, 1fr)",
-                gap: "2px",
-              }}
-            >
-              {grid.map((d, i) => {
-                const inMonth = d.getMonth() === viewMonth;
-                const selectable = isDateSelectable(d);
-                const isToday = isSameDay(d, today);
-                const isSelected = selectedDate ? isSameDay(d, selectedDate) : false;
-
-                return (
-                  <button
-                    key={i}
-                    type="button"
-                    onClick={() => handleDateClick(d)}
-                    disabled={!selectable}
-                    style={{
-                      background: isSelected
-                        ? "var(--color-accent)"
-                        : "none",
-                      border: isToday && !isSelected
-                        ? "1px solid rgba(18,18,18,0.2)"
-                        : "1px solid transparent",
-                      borderRadius: "4px",
-                      cursor: selectable ? "pointer" : "default",
-                      padding: "8px 0",
-                      fontFamily: "var(--font-primary)",
-                      fontSize: "var(--text-meta)",
-                      fontWeight: isToday ? 500 : 400,
-                      color: isSelected
-                        ? "#fff"
-                        : !inMonth || !selectable
-                        ? "var(--color-muted)"
-                        : "var(--color-text)",
-                      opacity: !inMonth ? 0.25 : !selectable && inMonth ? 0.35 : 1,
-                      transition: "background var(--motion-base) var(--ease-out), color var(--motion-base) var(--ease-out)",
-                    }}
-                    aria-label={toDateString(d)}
-                  >
-                    {d.getDate()}
-                  </button>
-                );
+              Available times for{" "}
+              {selectedDate.toLocaleDateString("en-US", {
+                weekday: "short",
+                month: "short",
+                day: "numeric",
               })}
-            </div>
-
-            {/* Cancel */}
-            <div style={{ marginTop: "var(--space-4)" }}>
-              <button
-                type="button"
-                onClick={onCancel}
-                className="text-meta"
-                style={{
-                  background: "none", border: "none", cursor: "pointer",
-                  padding: 0, color: "var(--color-muted)",
-                  fontFamily: "var(--font-primary)",
-                  transition: "color var(--motion-base) var(--ease-out)",
-                }}
-                onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "var(--color-text)"; }}
-                onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "var(--color-muted)"; }}
-              >
-                Never mind
-              </button>
-            </div>
-          </motion.div>
-        )}
-
-        {/* ── Stage: time slots ─────────────────────────────────────── */}
-        {stage === "times" && selectedDate && (
-          <motion.div
-            key="times"
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -6 }}
-            transition={{ duration: 0.32, ease: [0.16, 1, 0.3, 1] }}
-          >
-            {/* Date label + back */}
-            <div
-              style={{
-                display: "flex",
-                alignItems: "baseline",
-                gap: "var(--space-3)",
-                marginBottom: "var(--space-4)",
-              }}
-            >
-              <button
-                type="button"
-                onClick={() => { setStage("calendar"); setSelectedDate(null); }}
-                className="text-meta"
-                style={{
-                  background: "none", border: "none", cursor: "pointer",
-                  padding: 0, color: "var(--color-muted)",
-                  fontFamily: "var(--font-primary)",
-                  transition: "color var(--motion-base) var(--ease-out)",
-                }}
-                onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "var(--color-text)"; }}
-                onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "var(--color-muted)"; }}
-              >
-                ←
-              </button>
-              <span
-                className="text-meta"
-                style={{ fontWeight: 500, color: "var(--color-text)" }}
-              >
-                {selectedDate.toLocaleDateString("en-GB", {
-                  weekday: "long", day: "numeric", month: "long",
-                })}
-              </span>
-            </div>
+            </h4>
 
             {loadingSlots ? (
-              <p className="text-meta" style={{ color: "var(--color-muted)" }}>
+              <p style={{ fontSize: "0.875rem", color: "var(--color-text-secondary)" }}>
                 Checking availability…
               </p>
             ) : (
-              <div
-                style={{
-                  display: "flex",
-                  flexWrap: "wrap",
-                  gap: "var(--space-2)",
-                }}
-              >
-                {OFFERED_TIMES.map((t) => {
-                  const booked = bookedTimes.includes(t);
+              <>
+                {/* Filter to show only available (non-booked) time slots */}
+                {(() => {
+                  const now = new Date();
+                  const currentHour = now.getHours();
+                  const currentMinute = now.getMinutes();
+                  const isToday = selectedDate && isSameDay(selectedDate, now);
+
+                  // Filter out booked slots AND past slots if today
+                  const availableSlots = OFFERED_TIMES.filter((timeSlot) => {
+                    // Skip if already booked
+                    if (bookedTimes.includes(timeSlot.value)) return false;
+
+                    // If today, skip if time has passed
+                    if (isToday) {
+                      const [slotHour, slotMinute] = timeSlot.value.split(':').map(Number);
+                      const slotTimeInMinutes = slotHour * 60 + slotMinute;
+                      const currentTimeInMinutes = currentHour * 60 + currentMinute;
+
+                      // Skip if slot time has already passed
+                      if (slotTimeInMinutes <= currentTimeInMinutes) return false;
+                    }
+
+                    return true;
+                  });
+
+                  if (availableSlots.length === 0) {
+                    return (
+                      <p
+                        style={{
+                          fontSize: "0.875rem",
+                          color: "var(--color-text-secondary)",
+                          padding: "var(--space-2)",
+                          textAlign: "center",
+                        }}
+                      >
+                        No available time slots for this date. Please select another date.
+                      </p>
+                    );
+                  }
+
                   return (
-                    <button
-                      key={t}
-                      type="button"
-                      onClick={() => handleTimeClick(t)}
-                      disabled={booked}
+                    <div
                       style={{
-                        background: "none",
-                        border: `1px solid ${booked ? "rgba(18,18,18,0.12)" : "rgba(18,18,18,0.25)"}`,
-                        borderRadius: "4px",
-                        cursor: booked ? "default" : "pointer",
-                        padding: "10px 20px",
-                        fontFamily: "var(--font-primary)",
-                        fontSize: "var(--text-meta)",
-                        color: booked ? "var(--color-muted)" : "var(--color-text)",
-                        opacity: booked ? 0.4 : 1,
-                        transition: "border-color var(--motion-base) var(--ease-out), color var(--motion-base) var(--ease-out)",
-                      }}
-                      onMouseEnter={(e) => {
-                        if (!booked) (e.currentTarget as HTMLButtonElement).style.borderColor = "var(--color-text)";
-                      }}
-                      onMouseLeave={(e) => {
-                        if (!booked) (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(18,18,18,0.25)";
+                        display: "grid",
+                        gridTemplateColumns: "repeat(3, 1fr)",
+                        gap: "var(--space-2)",
                       }}
                     >
-                      {t}
-                    </button>
+                      {availableSlots.map((timeSlot) => {
+                        const isSelected = selectedTime === timeSlot.value;
+
+                        return (
+                          <button
+                            key={timeSlot.value}
+                            type="button"
+                            onClick={() => handleTimeClick(timeSlot.value)}
+                            className={isSelected ? "time-slot-selected" : "time-slot-button"}
+                            style={{
+                              background: isSelected
+                                ? "rgba(230, 126, 34, 0.1)"
+                                : "none",
+                              border: isSelected
+                                ? "1px solid var(--color-accent)"
+                                : undefined,
+                              borderRadius: "8px",
+                              cursor: "pointer",
+                              padding: "var(--space-1)",
+                              fontFamily: "var(--font-primary)",
+                              fontSize: "0.875rem",
+                              fontWeight: isSelected ? 600 : 400,
+                              color: isSelected
+                                ? "var(--color-accent)"
+                                : "var(--color-text)",
+                              transition: "all var(--motion-base) var(--ease-out)",
+                            }}
+                          >
+                            {timeSlot.display}
+                          </button>
+                        );
+                      })}
+                    </div>
                   );
-                })}
-              </div>
+                })()}
+                {/* Form appears when time is selected */}
+                <AnimatePresence>
+                  {selectedTime && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: "auto" }}
+                      exit={{ opacity: 0, height: 0 }}
+                      transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                      style={{ marginTop: "var(--space-4)" }}
+                    >
+                      <form
+                        action={formAction}
+                        style={{
+                          display: "flex",
+                          flexDirection: "column",
+                          gap: "var(--space-3)",
+                        }}
+                      >
+                        {/* Hidden fields */}
+                        <input
+                          type="hidden"
+                          name="date"
+                          value={toDateString(selectedDate)}
+                        />
+                        <input type="hidden" name="time" value={selectedTime} />
+
+                        {/* Name */}
+                        <div>
+                          <label
+                            htmlFor="booking-name"
+                            style={{
+                              display: "block",
+                              fontSize: "0.875rem",
+                              fontWeight: 500,
+                              color: "var(--color-text-secondary)",
+                              marginBottom: "var(--space-1)",
+                            }}
+                          >
+                            Name
+                          </label>
+                          <input
+                            id="booking-name"
+                            name="name"
+                            type="text"
+                            className="field-input"
+                            placeholder="Your name"
+                            autoComplete="name"
+                            required
+                          />
+                        </div>
+
+                        {/* Email */}
+                        <div>
+                          <label
+                            htmlFor="booking-email"
+                            style={{
+                              display: "block",
+                              fontSize: "0.875rem",
+                              fontWeight: 500,
+                              color: "var(--color-text-secondary)",
+                              marginBottom: "var(--space-1)",
+                            }}
+                          >
+                            Email
+                          </label>
+                          <input
+                            id="booking-email"
+                            name="email"
+                            type="email"
+                            className="field-input"
+                            placeholder="you@example.com"
+                            autoComplete="email"
+                            required
+                          />
+                        </div>
+
+                        {/* Message */}
+                        <div>
+                          <label
+                            htmlFor="booking-message"
+                            style={{
+                              display: "block",
+                              fontSize: "0.875rem",
+                              fontWeight: 500,
+                              color: "var(--color-text-secondary)",
+                              marginBottom: "var(--space-1)",
+                            }}
+                          >
+                            Project Details (optional)
+                          </label>
+                          <textarea
+                            id="booking-message"
+                            name="message"
+                            className="field-input"
+                            placeholder="Tell us a bit about what you're building..."
+                            rows={4}
+                            style={{ resize: "none" }}
+                          />
+                        </div>
+
+                        {/* Error */}
+                        <AnimatePresence>
+                          {formState.error && (
+                            <motion.p
+                              initial={{ opacity: 0 }}
+                              animate={{ opacity: 1 }}
+                              exit={{ opacity: 0 }}
+                              style={{
+                                fontSize: "0.875rem",
+                                color: "#ef4444",
+                              }}
+                            >
+                              {formState.error}
+                            </motion.p>
+                          )}
+                        </AnimatePresence>
+
+                        {/* Submit */}
+                        <button
+                          type="submit"
+                          disabled={isPending}
+                          style={{
+                            width: "100%",
+                            background: "var(--color-accent)",
+                            color: "#fff",
+                            padding: "var(--space-2)",
+                            borderRadius: "12px",
+                            fontSize: "1rem",
+                            fontWeight: 600,
+                            border: "none",
+                            cursor: isPending ? "not-allowed" : "pointer",
+                            transition: "all var(--motion-base) var(--ease-out)",
+                            boxShadow: "0 0 15px rgba(230, 126, 34, 0.3)",
+                          }}
+                          onMouseEnter={(e) => {
+                            if (!isPending) {
+                              e.currentTarget.style.background =
+                                "var(--color-accent-hover)";
+                              e.currentTarget.style.boxShadow =
+                                "0 0 25px rgba(230, 126, 34, 0.5)";
+                            }
+                          }}
+                          onMouseLeave={(e) => {
+                            if (!isPending) {
+                              e.currentTarget.style.background =
+                                "var(--color-accent)";
+                              e.currentTarget.style.boxShadow =
+                                "0 0 15px rgba(230, 126, 34, 0.3)";
+                            }
+                          }}
+                        >
+                          {isPending ? "Confirming..." : "Confirm Booking"}
+                        </button>
+                      </form>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </>
             )}
-
-            {/* Cancel */}
-            <div style={{ marginTop: "var(--space-4)" }}>
-              <button
-                type="button"
-                onClick={onCancel}
-                className="text-meta"
-                style={{
-                  background: "none", border: "none", cursor: "pointer",
-                  padding: 0, color: "var(--color-muted)",
-                  fontFamily: "var(--font-primary)",
-                  transition: "color var(--motion-base) var(--ease-out)",
-                }}
-                onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "var(--color-text)"; }}
-                onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "var(--color-muted)"; }}
-              >
-                Never mind
-              </button>
-            </div>
           </motion.div>
         )}
-
-        {/* ── Stage: booking form ───────────────────────────────────── */}
-        {stage === "form" && selectedDate && selectedTime && (
-          <motion.div
-            key="form"
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -6 }}
-            transition={{ duration: 0.32, ease: [0.16, 1, 0.3, 1] }}
-          >
-            {/* Selected slot label + back */}
-            <div
-              style={{
-                display: "flex",
-                alignItems: "baseline",
-                gap: "var(--space-3)",
-                marginBottom: "var(--space-4)",
-              }}
-            >
-              <button
-                type="button"
-                onClick={() => { setStage("times"); setSelectedTime(null); }}
-                className="text-meta"
-                style={{
-                  background: "none", border: "none", cursor: "pointer",
-                  padding: 0, color: "var(--color-muted)",
-                  fontFamily: "var(--font-primary)",
-                  transition: "color var(--motion-base) var(--ease-out)",
-                }}
-                onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "var(--color-text)"; }}
-                onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "var(--color-muted)"; }}
-              >
-                ←
-              </button>
-              <span
-                className="text-meta"
-                style={{ fontWeight: 500, color: "var(--color-text)" }}
-              >
-                {selectedDate.toLocaleDateString("en-GB", {
-                  weekday: "short", day: "numeric", month: "long",
-                })}{" "}
-                · {selectedTime}
-              </span>
-            </div>
-
-            <form
-              action={formAction}
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                gap: "var(--space-4)",
-              }}
-            >
-              {/* Hidden fields carry date + time */}
-              <input type="hidden" name="date" value={toDateString(selectedDate)} />
-              <input type="hidden" name="time" value={selectedTime} />
-
-              {/* Name */}
-              <div>
-                <label htmlFor="booking-name" className="field-label">Name</label>
-                <input
-                  id="booking-name"
-                  name="name"
-                  type="text"
-                  className="field-input"
-                  placeholder="Your name"
-                  autoComplete="name"
-                  autoFocus
-                  required
-                />
-              </div>
-
-              {/* Email */}
-              <div>
-                <label htmlFor="booking-email" className="field-label">Email</label>
-                <input
-                  id="booking-email"
-                  name="email"
-                  type="email"
-                  className="field-input"
-                  placeholder="you@example.com"
-                  autoComplete="email"
-                  required
-                />
-              </div>
-
-              {/* Context (optional) */}
-              <div>
-                <label htmlFor="booking-message" className="field-label">
-                  What are you thinking about building? <span style={{ opacity: 0.5 }}>(optional)</span>
-                </label>
-                <textarea
-                  id="booking-message"
-                  name="message"
-                  className="field-input"
-                  placeholder="Brief context is fine."
-                  rows={3}
-                  style={{ resize: "none" }}
-                />
-              </div>
-
-              {/* Inline error */}
-              <AnimatePresence>
-                {formState.error && (
-                  <motion.p
-                    key="error"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    className="text-meta"
-                    style={{ color: "var(--color-text)" }}
-                  >
-                    {formState.error}
-                  </motion.p>
-                )}
-              </AnimatePresence>
-
-              {/* Submit row */}
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "var(--space-4)",
-                }}
-              >
-                <button
-                  type="submit"
-                  disabled={isPending}
-                  style={{
-                    background: "none", border: "none",
-                    cursor: isPending ? "wait" : "pointer",
-                    padding: 0,
-                    fontSize: "var(--text-body-l)",
-                    lineHeight: "var(--leading-body)",
-                    fontWeight: 500,
-                    color: isPending ? "var(--color-muted)" : "var(--color-accent)",
-                    fontFamily: "var(--font-primary)",
-                    transition: "color var(--motion-base) var(--ease-out)",
-                    display: "inline-flex",
-                    alignItems: "center",
-                    gap: "6px",
-                  }}
-                >
-                  {isPending ? "Booking…" : "Confirm →"}
-                </button>
-
-                <button
-                  type="button"
-                  onClick={onCancel}
-                  className="text-meta"
-                  style={{
-                    background: "none", border: "none", cursor: "pointer",
-                    padding: 0, color: "var(--color-muted)",
-                    fontFamily: "var(--font-primary)",
-                    transition: "color var(--motion-base) var(--ease-out)",
-                  }}
-                  onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "var(--color-text)"; }}
-                  onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "var(--color-muted)"; }}
-                >
-                  Never mind
-                </button>
-              </div>
-            </form>
-          </motion.div>
-        )}
-
       </AnimatePresence>
     </div>
   );

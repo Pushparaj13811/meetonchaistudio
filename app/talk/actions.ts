@@ -116,29 +116,27 @@ function emailShell(content: string): string {
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 </head>
-<body style="margin:0;padding:0;background-color:#ffffff;-webkit-font-smoothing:antialiased;">
-  <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#ffffff;">
+<body style="margin:0;padding:0;background-color:#0a0a0c;-webkit-font-smoothing:antialiased;">
+  <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#0a0a0c;">
     <tr>
-      <td align="center" style="padding:0;">
-        <table width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:560px;">
+      <td align="center" style="padding:48px 16px;">
+        <table width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:24px;overflow:hidden;">
           <tr>
-            <td style="padding:48px 32px 0;">
-              <!-- Wordmark -->
-              <p style="margin:0 0 48px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:11px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:#7a6a4f;">
-                Meet on Chai
-              </p>
+            <td style="padding:48px 40px;">
+              <!-- Logo -->
+              <div style="margin-bottom:40px;">
+                <h2 style="margin:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:24px;font-weight:800;letter-spacing:-0.02em;color:#f9fafb;">
+                  MeetOn<span style="color:#e67e22;">Chai</span>
+                </h2>
+              </div>
               ${content}
               <!-- Footer -->
-              <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-top:48px;border-top:1px solid #e8e8e8;">
-                <tr>
-                  <td style="padding-top:24px;">
-                    <p style="margin:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:12px;color:#999999;line-height:1.5;">
-                      Meet on Chai &nbsp;·&nbsp;
-                      <a href="mailto:hello@meetonchai.com" style="color:#999999;text-decoration:none;">hello@meetonchai.com</a>
-                    </p>
-                  </td>
-                </tr>
-              </table>
+              <div style="margin-top:48px;padding-top:32px;border-top:1px solid rgba(255,255,255,0.08);">
+                <p style="margin:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:13px;color:#9ca3af;line-height:1.6;">
+                  MeetOnChai Studio &nbsp;·&nbsp;
+                  <a href="mailto:hello@meetonchai.com" style="color:#e67e22;text-decoration:none;">hello@meetonchai.com</a>
+                </p>
+              </div>
             </td>
           </tr>
         </table>
@@ -154,69 +152,62 @@ function bookingConfirmationHtml({
   date,
   time,
   meetingLink,
+  bookingId,
 }: {
   name: string;
   date: string;
   time: string;
   meetingLink: string;
+  bookingId: string;
 }): string {
   const formattedDate = formatDate(date);
   const formattedTime = formatTime(time);
+  const cancelUrl = `${process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"}/cancel/${bookingId}`;
 
   return emailShell(`
     <!-- Heading -->
-    <h1 style="margin:0 0 8px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:32px;font-weight:600;color:#121212;line-height:1.2;letter-spacing:-0.02em;">
-      Your chai is booked.
+    <h1 style="margin:0 0 12px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:36px;font-weight:800;color:#f9fafb;line-height:1.2;letter-spacing:-0.02em;">
+      Your chai is booked
     </h1>
-    <p style="margin:0 0 32px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:16px;color:#666666;line-height:1.6;">
-      Hi ${name}, looking forward to talking it through.
+    <p style="margin:0 0 32px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:17px;color:#9ca3af;line-height:1.6;">
+      Hi ${name}, looking forward to talking it through over a virtual chai.
     </p>
 
     <!-- Booking details card -->
-    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="border:1px solid #e8e8e8;border-radius:8px;margin-bottom:32px;">
-      <tr>
-        <td style="padding:24px 28px;">
-          <p style="margin:0 0 16px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:11px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:#999999;">
-            Booking details
-          </p>
-          <table cellpadding="0" cellspacing="0" border="0">
-            <tr>
-              <td style="padding-bottom:10px;padding-right:24px;vertical-align:top;">
-                <p style="margin:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:11px;color:#999999;text-transform:uppercase;letter-spacing:0.06em;font-weight:500;">Date</p>
-                <p style="margin:4px 0 0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:15px;font-weight:500;color:#121212;">${formattedDate}</p>
-              </td>
-            </tr>
-            <tr>
-              <td style="padding-bottom:0;padding-right:24px;vertical-align:top;">
-                <p style="margin:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:11px;color:#999999;text-transform:uppercase;letter-spacing:0.06em;font-weight:500;">Time</p>
-                <p style="margin:4px 0 0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:15px;font-weight:500;color:#121212;">${formattedTime}</p>
-              </td>
-            </tr>
-          </table>
-        </td>
-      </tr>
-    </table>
+    <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:28px;margin-bottom:32px;">
+      <p style="margin:0 0 20px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:12px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:#9ca3af;">
+        Meeting Details
+      </p>
+      <div style="margin-bottom:16px;">
+        <p style="margin:0 0 6px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:12px;color:#6b7280;text-transform:uppercase;letter-spacing:0.08em;font-weight:600;">Date</p>
+        <p style="margin:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:16px;font-weight:600;color:#f9fafb;">${formattedDate}</p>
+      </div>
+      <div>
+        <p style="margin:0 0 6px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:12px;color:#6b7280;text-transform:uppercase;letter-spacing:0.08em;font-weight:600;">Time</p>
+        <p style="margin:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:16px;font-weight:600;color:#f9fafb;">${formattedTime}</p>
+      </div>
+    </div>
 
     <!-- Meeting link button -->
-    <table cellpadding="0" cellspacing="0" border="0" style="margin-bottom:32px;">
+    <table cellpadding="0" cellspacing="0" border="0" style="margin-bottom:24px;">
       <tr>
-        <td style="background-color:#121212;border-radius:6px;">
-          <a href="${meetingLink}" style="display:inline-block;padding:14px 28px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:14px;font-weight:500;color:#ffffff;text-decoration:none;letter-spacing:0.01em;">
-            Join the call →
+        <td style="background:#e67e22;border-radius:50px;box-shadow:0 0 20px rgba(230,126,34,0.4);">
+          <a href="${meetingLink}" style="display:inline-block;padding:16px 32px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:15px;font-weight:600;color:#ffffff;text-decoration:none;letter-spacing:0.01em;">
+            Join the Call →
           </a>
         </td>
       </tr>
     </table>
 
     <!-- Meeting link plain text fallback -->
-    <p style="margin:0 0 32px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:12px;color:#999999;line-height:1.6;">
-      Or copy the link:<br />
-      <a href="${meetingLink}" style="color:#7a6a4f;text-decoration:none;word-break:break-all;">${meetingLink}</a>
+    <p style="margin:0 0 32px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:13px;color:#6b7280;line-height:1.6;">
+      Or copy the meeting link:<br />
+      <a href="${meetingLink}" style="color:#e67e22;text-decoration:none;word-break:break-all;">${meetingLink}</a>
     </p>
 
     <!-- Note -->
-    <p style="margin:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:14px;color:#666666;line-height:1.7;">
-      Can&rsquo;t make it? Just reply to this email and we&rsquo;ll find another time.
+    <p style="margin:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:15px;color:#9ca3af;line-height:1.7;">
+      Can&rsquo;t make it? <a href="${cancelUrl}" style="color:#e67e22;text-decoration:none;">Cancel this booking</a> and we&rsquo;ll find another time.
     </p>
   `);
 }
@@ -224,26 +215,22 @@ function bookingConfirmationHtml({
 function noteAckHtml({ name }: { name: string }): string {
   return emailShell(`
     <!-- Heading -->
-    <h1 style="margin:0 0 8px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:32px;font-weight:600;color:#121212;line-height:1.2;letter-spacing:-0.02em;">
-      Got your note.
+    <h1 style="margin:0 0 12px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:36px;font-weight:800;color:#f9fafb;line-height:1.2;letter-spacing:-0.02em;">
+      Got your note
     </h1>
-    <p style="margin:0 0 32px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:16px;color:#666666;line-height:1.6;">
+    <p style="margin:0 0 32px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:17px;color:#9ca3af;line-height:1.6;">
       Hi ${name}, we read every message and reply within a day.
     </p>
 
-    <!-- Divider with message -->
-    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="border-left:2px solid #7a6a4f;margin-bottom:32px;">
-      <tr>
-        <td style="padding:4px 0 4px 20px;">
-          <p style="margin:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:15px;color:#121212;line-height:1.7;font-style:italic;">
-            &ldquo;Before we build anything, we prefer to understand what&rsquo;s actually going on.&rdquo;
-          </p>
-        </td>
-      </tr>
-    </table>
+    <!-- Quote card -->
+    <div style="background:rgba(230,126,34,0.1);border-left:3px solid #e67e22;border-radius:12px;padding:20px 24px;margin-bottom:32px;">
+      <p style="margin:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:16px;color:#f9fafb;line-height:1.7;font-style:italic;">
+        &ldquo;Before we build anything, we prefer to understand what&rsquo;s actually going on.&rdquo;
+      </p>
+    </div>
 
-    <p style="margin:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:14px;color:#666666;line-height:1.7;">
-      We&rsquo;ll be in touch soon to find a time to talk.
+    <p style="margin:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:15px;color:#9ca3af;line-height:1.7;">
+      We&rsquo;ll be in touch soon to find a time to talk over chai.
     </p>
   `);
 }
@@ -268,65 +255,51 @@ function studioBookingHtml({
 
   return emailShell(`
     <!-- Heading -->
-    <h1 style="margin:0 0 8px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:28px;font-weight:600;color:#121212;line-height:1.2;letter-spacing:-0.02em;">
-      New booking
+    <h1 style="margin:0 0 12px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:36px;font-weight:800;color:#f9fafb;line-height:1.2;letter-spacing:-0.02em;">
+      New Booking
     </h1>
-    <p style="margin:0 0 32px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:15px;color:#666666;line-height:1.6;">
-      ${name} booked a slot.
+    <p style="margin:0 0 32px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:17px;color:#9ca3af;line-height:1.6;">
+      ${name} just booked a slot with you.
     </p>
 
     <!-- Details card -->
-    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="border:1px solid #e8e8e8;border-radius:8px;margin-bottom:32px;">
-      <tr>
-        <td style="padding:24px 28px;">
-          <table width="100%" cellpadding="0" cellspacing="0" border="0">
-            <tr>
-              <td style="padding-bottom:16px;border-bottom:1px solid #f0f0f0;">
-                <p style="margin:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:11px;color:#999999;text-transform:uppercase;letter-spacing:0.08em;font-weight:600;">Name</p>
-                <p style="margin:4px 0 0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:15px;font-weight:500;color:#121212;">${name}</p>
-              </td>
-            </tr>
-            <tr>
-              <td style="padding:16px 0;border-bottom:1px solid #f0f0f0;">
-                <p style="margin:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:11px;color:#999999;text-transform:uppercase;letter-spacing:0.08em;font-weight:600;">Email</p>
-                <p style="margin:4px 0 0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:15px;font-weight:500;color:#121212;">
-                  <a href="mailto:${email}" style="color:#7a6a4f;text-decoration:none;">${email}</a>
-                </p>
-              </td>
-            </tr>
-            <tr>
-              <td style="padding:16px 0;border-bottom:1px solid #f0f0f0;">
-                <p style="margin:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:11px;color:#999999;text-transform:uppercase;letter-spacing:0.08em;font-weight:600;">Date &amp; Time</p>
-                <p style="margin:4px 0 0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:15px;font-weight:500;color:#121212;">${formattedDate} &nbsp;·&nbsp; ${formattedTime}</p>
-              </td>
-            </tr>
-            ${
-              message
-                ? `<tr>
-              <td style="padding:16px 0 0;">
-                <p style="margin:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:11px;color:#999999;text-transform:uppercase;letter-spacing:0.08em;font-weight:600;">Context</p>
-                <p style="margin:4px 0 0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:15px;color:#333333;line-height:1.6;">${message}</p>
-              </td>
-            </tr>`
-                : ""
-            }
-          </table>
-        </td>
-      </tr>
-    </table>
+    <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:28px;margin-bottom:32px;">
+      <div style="margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid rgba(255,255,255,0.08);">
+        <p style="margin:0 0 6px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:12px;color:#6b7280;text-transform:uppercase;letter-spacing:0.08em;font-weight:600;">Name</p>
+        <p style="margin:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:16px;font-weight:600;color:#f9fafb;">${name}</p>
+      </div>
+      <div style="margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid rgba(255,255,255,0.08);">
+        <p style="margin:0 0 6px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:12px;color:#6b7280;text-transform:uppercase;letter-spacing:0.08em;font-weight:600;">Email</p>
+        <p style="margin:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:16px;font-weight:600;color:#f9fafb;">
+          <a href="mailto:${email}" style="color:#e67e22;text-decoration:none;">${email}</a>
+        </p>
+      </div>
+      <div style="margin-bottom:${message ? '20px' : '0'};${message ? 'padding-bottom:20px;border-bottom:1px solid rgba(255,255,255,0.08);' : ''}">
+        <p style="margin:0 0 6px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:12px;color:#6b7280;text-transform:uppercase;letter-spacing:0.08em;font-weight:600;">Date &amp; Time</p>
+        <p style="margin:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:16px;font-weight:600;color:#f9fafb;">${formattedDate} &nbsp;·&nbsp; ${formattedTime}</p>
+      </div>
+      ${
+        message
+          ? `<div>
+          <p style="margin:0 0 6px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:12px;color:#6b7280;text-transform:uppercase;letter-spacing:0.08em;font-weight:600;">Message</p>
+          <p style="margin:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:15px;color:#d1d5db;line-height:1.6;">${message}</p>
+        </div>`
+          : ""
+      }
+    </div>
 
     <!-- Meeting link button -->
     <table cellpadding="0" cellspacing="0" border="0" style="margin-bottom:16px;">
       <tr>
-        <td style="background-color:#121212;border-radius:6px;">
-          <a href="${meetingLink}" style="display:inline-block;padding:14px 28px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:14px;font-weight:500;color:#ffffff;text-decoration:none;">
-            Join the call →
+        <td style="background:#e67e22;border-radius:50px;box-shadow:0 0 20px rgba(230,126,34,0.4);">
+          <a href="${meetingLink}" style="display:inline-block;padding:16px 32px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:15px;font-weight:600;color:#ffffff;text-decoration:none;letter-spacing:0.01em;">
+            Join the Call →
           </a>
         </td>
       </tr>
     </table>
-    <p style="margin:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:12px;color:#999999;">
-      <a href="${meetingLink}" style="color:#7a6a4f;text-decoration:none;word-break:break-all;">${meetingLink}</a>
+    <p style="margin:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:13px;color:#6b7280;word-break:break-all;">
+      <a href="${meetingLink}" style="color:#e67e22;text-decoration:none;">${meetingLink}</a>
     </p>
   `);
 }
@@ -421,11 +394,12 @@ export async function bookSlot(
   // Store the base room URL (without hash) so it's portable
   const meetingLink = bookerMeetingLink;
 
-  await addBooking({ name, email, date, time, message: message || undefined, meetingLink });
+  const newBooking = await addBooking({ name, email, date, time, message: message || undefined, meetingLink });
 
   const resend = getResend();
   if (resend) {
     const { FROM, TO } = getEnv();
+    const cancelUrl = `${process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"}/cancel/${newBooking.id}`;
 
     const studioNotification = resend.emails.send({
       from: FROM,
@@ -440,8 +414,8 @@ export async function bookSlot(
       from: FROM,
       to: email,
       subject: `Your chai is booked — ${formatDate(date)} at ${formatTime(time)}`,
-      html: bookingConfirmationHtml({ name, date, time, meetingLink: bookerMeetingLink }),
-      text: `Hi ${name},\n\nYour slot is booked: ${date} at ${time}.\n\nJoin the call (your name is pre-filled): ${bookerMeetingLink}\n\nCan't make it? Reply to this email.\n\n— Meet on Chai`,
+      html: bookingConfirmationHtml({ name, date, time, meetingLink: bookerMeetingLink, bookingId: newBooking.id }),
+      text: `Hi ${name},\n\nYour slot is booked: ${date} at ${time}.\n\nJoin the call (your name is pre-filled): ${bookerMeetingLink}\n\nCan't make it? Cancel here: ${cancelUrl}\n\n— Meet on Chai`,
     });
 
     const [n, u] = await Promise.all([studioNotification, userConfirmation]);
