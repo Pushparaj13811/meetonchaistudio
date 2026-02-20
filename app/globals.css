@@ -3,11 +3,23 @@
 /* ─── Design Tokens ─────────────────────────────────────────────────────────── */
 
 :root {
-  /* Color */
-  --color-bg: #fafafa;
-  --color-text: #121212;
-  --color-muted: rgba(18, 18, 18, 0.6);
-  --color-accent: #7a6a4f;
+  /* Color - Dark Mode (Default) */
+  --color-bg: #0a0a0c;
+  --color-card: #141417;
+  --color-text: #f8f9fa;
+  --color-text-primary: #ffffff;
+  --color-text-secondary: #9ca3af;
+  --color-muted: #9ca3af;
+  --color-muted-accessible: #a8adb5; /* WCAG AA compliant on dark bg */
+  --color-accent: #d66d1a; /* WCAG AA compliant with white text */
+  --color-accent-hover: #c25d15;
+  --color-accent-soft: rgba(214, 109, 26, 0.1);
+
+  /* Dark mode specific colors */
+  --color-border: rgba(255, 255, 255, 0.05);
+  --color-border-hover: rgba(230, 126, 34, 0.3);
+  --color-shadow: rgba(0, 0, 0, 0.1);
+  --color-shadow-hover: rgba(230, 126, 34, 0.15);
 
   /* Spacing — multiples of 8px, rhythm unit is 48px */
   --space-1: 8px;
@@ -27,6 +39,8 @@
   /* Typography */
   --font-primary: var(--font-inter), -apple-system, BlinkMacSystemFont,
     "Segoe UI", sans-serif;
+  --font-heading: var(--font-outfit), var(--font-inter), -apple-system,
+    BlinkMacSystemFont, "Segoe UI", sans-serif;
 
   /* Type scale */
   --text-display-xl: 92px;
@@ -50,15 +64,46 @@
   --content-margin-mobile: 24px;
 }
 
+/* ─── Light Mode Theme ───────────────────────────────────────────────────────── */
+
+[data-theme="light"] {
+  /* Color - Light Mode */
+  --color-bg: #ffffff;
+  --color-card: #f9fafb;
+  --color-text: #0a0a0c;
+  --color-text-primary: #0a0a0c;
+  --color-text-secondary: #4b5563;
+  --color-muted: #6b7280;
+  --color-muted-accessible: #4b5563; /* WCAG AA compliant on light bg */
+  --color-accent: #d66d1a;
+  --color-accent-hover: #e67e22;
+  --color-accent-soft: rgba(214, 109, 26, 0.1);
+
+  /* Light mode specific colors */
+  --color-border: rgba(0, 0, 0, 0.08);
+  --color-border-hover: rgba(214, 109, 26, 0.3);
+  --color-shadow: rgba(0, 0, 0, 0.05);
+  --color-shadow-hover: rgba(214, 109, 26, 0.15);
+}
+
 /* ─── Tailwind theme bridge ──────────────────────────────────────────────────── */
 
 @theme inline {
   --font-sans: var(--font-inter);
+  --font-heading: var(--font-outfit);
 
   --color-background: var(--color-bg);
   --color-foreground: var(--color-text);
   --color-muted: var(--color-muted);
   --color-accent: var(--color-accent);
+  --color-dark: #0a0a0c;
+  --color-card: #141417;
+  --color-chai: #d66d1a;
+  --color-chai-hover: #c25d15;
+  --color-chai-soft: rgba(214, 109, 26, 0.1);
+
+  --animate-float: float 6s ease-in-out infinite;
+  --animate-pulse-slow: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
 /* ─── Base reset ─────────────────────────────────────────────────────────────── */
@@ -72,10 +117,8 @@
 }
 
 html {
-  scroll-behavior: auto;
+  scroll-behavior: smooth;
   text-size-adjust: 100%;
-  /* 2px top accent — silent brand mark. Present on every page. */
-  border-top: 2px solid var(--color-accent);
 }
 
 /* ─── Text selection ─────────────────────────────────────────────────────────── */
@@ -93,6 +136,7 @@ body {
   line-height: var(--leading-body);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
 }
 
 /* ─── Typography base ────────────────────────────────────────────────────────── */
@@ -101,7 +145,8 @@ h1,
 h2,
 h3,
 h4 {
-  font-weight: 700;
+  font-family: var(--font-heading);
+  font-weight: 800;
   line-height: var(--leading-heading);
   color: var(--color-text);
 }
@@ -119,21 +164,24 @@ a {
 /* ─── Utility classes ────────────────────────────────────────────────────────── */
 
 .text-display-xl {
+  font-family: var(--font-heading);
   font-size: clamp(52px, 6.4vw, var(--text-display-xl));
   line-height: var(--leading-display-xl);
-  font-weight: 700;
+  font-weight: 900;
 }
 
 .text-display-l {
+  font-family: var(--font-heading);
   font-size: clamp(36px, 4.4vw, var(--text-display-l));
   line-height: var(--leading-display-l);
-  font-weight: 700;
+  font-weight: 800;
 }
 
 .text-heading {
+  font-family: var(--font-heading);
   font-size: clamp(28px, 2.8vw, var(--text-heading));
   line-height: var(--leading-heading);
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .text-body-l {
@@ -155,22 +203,493 @@ a {
   color: var(--color-muted);
 }
 
-/* ─── Grain texture ──────────────────────────────────────────────────────────── */
-/*
- * SVG fractalNoise at low opacity adds surface quality to the near-white bg.
- * Fixed position so it doesn't scroll with content.
- * Pointer-events-none so it never intercepts interaction.
- * Opacity at 0.04 — visible as texture, invisible as a distinct element.
- */
-body::after {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: 9997;
+/* ─── Glass morphism effects ─────────────────────────────────────────────────── */
+
+.glass-nav {
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  background: rgba(10, 10, 12, 0.7);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: none;
+}
+
+.glass-nav.scrolled {
+  background: rgba(10, 10, 12, 0.85);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="light"] .glass-nav {
+  background: rgba(255, 255, 255, 0.7);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+[data-theme="light"] .glass-nav.scrolled {
+  background: rgba(255, 255, 255, 0.85);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.mobile-menu-overlay {
+  background: rgba(10, 10, 12, 0.95);
+  border-left: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="light"] .mobile-menu-overlay {
+  background: rgba(255, 255, 255, 0.95);
+  border-left: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+/* Logo theme switching */
+.logo-dark-theme {
+  display: block;
+}
+
+.logo-light-theme {
+  display: none;
+}
+
+[data-theme="light"] .logo-dark-theme {
+  display: none;
+}
+
+[data-theme="light"] .logo-light-theme {
+  display: block;
+}
+
+/* Navigation menu visibility */
+.desktop-menu {
+  display: flex;
+  align-items: center;
+}
+
+.mobile-controls {
+  display: none;
+  align-items: center;
+}
+
+@media (max-width: 767px) {
+  .desktop-menu {
+    display: none !important;
+  }
+  .mobile-controls {
+    display: flex !important;
+  }
+}
+
+/* Theme toggle button */
+.theme-toggle-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="light"] .theme-toggle-btn {
+  background: rgba(0, 0, 0, 0.03);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.theme-toggle-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+[data-theme="light"] .theme-toggle-btn:hover {
+  background: rgba(0, 0, 0, 0.06);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+}
+
+/* Theme toggle icons */
+.theme-icon-light {
+  display: block !important;
+}
+
+.theme-icon-dark {
+  display: none !important;
+}
+
+[data-theme="light"] .theme-icon-light {
+  display: none !important;
+}
+
+[data-theme="light"] .theme-icon-dark {
+  display: block !important;
+}
+
+/* Infinite scroll hover pause */
+.testimonial-scroll-wrapper,
+.tech-scroll-wrapper {
+  cursor: default;
+}
+
+.testimonial-scroll-wrapper:hover .testimonial-scroll,
+.tech-scroll-wrapper:hover .tech-scroll {
+  animation-play-state: paused !important;
+}
+
+/* Cookie consent popup */
+.cookie-consent-popup {
+  background: rgba(10, 10, 12, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+}
+
+[data-theme="light"] .cookie-consent-popup {
+  background: rgba(255, 255, 255, 0.98);
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12), 0 8px 16px rgba(0, 0, 0, 0.08);
+}
+
+/* Cookie consent secondary button */
+.cookie-secondary-button {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.cookie-secondary-button:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+[data-theme="light"] .cookie-secondary-button {
+  background: rgba(0, 0, 0, 0.03);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="light"] .cookie-secondary-button:hover {
+  background: rgba(0, 0, 0, 0.06);
+  border-color: rgba(0, 0, 0, 0.2);
+}
+
+/* Booking calendar card */
+.booking-calendar-card {
+  background: rgba(10, 10, 12, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+}
+
+[data-theme="light"] .booking-calendar-card {
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+}
+
+/* Calendar navigation buttons */
+.calendar-nav-button:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--color-text);
+}
+
+[data-theme="light"] .calendar-nav-button:hover {
+  background: rgba(0, 0, 0, 0.05);
+  color: var(--color-text);
+}
+
+/* Time slot buttons */
+.time-slot-button {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.time-slot-button:hover {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+[data-theme="light"] .time-slot-button {
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="light"] .time-slot-button:hover {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+/* Contact info card in legal pages */
+.contact-info-card {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+[data-theme="light"] .contact-info-card {
+  background: rgba(0, 0, 0, 0.02);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.02);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid var(--color-border);
+  transition: all 0.3s ease;
+}
+
+[data-theme="light"] .glass-card {
+  background: rgba(0, 0, 0, 0.02);
+  box-shadow: 0 1px 3px var(--color-shadow);
+}
+
+.glass-card:hover {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: var(--color-border-hover);
+  transform: translateY(-5px);
+  box-shadow: 0 10px 30px -10px var(--color-shadow-hover);
+}
+
+[data-theme="light"] .glass-card:hover {
+  background: rgba(0, 0, 0, 0.04);
+  box-shadow: 0 10px 30px -10px var(--color-shadow-hover), 0 4px 6px -2px var(--color-shadow);
+}
+
+/* ─── Gradient text ──────────────────────────────────────────────────────────── */
+
+.text-gradient {
+  background: linear-gradient(135deg, #f59e0b 0%, #e67e22 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ─── Background glow ────────────────────────────────────────────────────────── */
+
+.bg-glow {
+  position: absolute;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(
+    circle,
+    rgba(230, 126, 34, 0.15) 0%,
+    rgba(10, 10, 12, 0) 70%
+  );
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: -1;
   pointer-events: none;
-  opacity: 0.04;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
-  background-size: 200px 200px;
+}
+
+[data-theme="light"] .bg-glow {
+  background: radial-gradient(
+    circle,
+    rgba(230, 126, 34, 0.15) 0%,
+    rgba(255, 255, 255, 0) 70%
+  );
+}
+
+/* ─── Hero Glow Effects ──────────────────────────────────────────────────────── */
+
+[data-theme="light"] .hero-glow-1 {
+  background: rgba(230, 126, 34, 0.15) !important;
+  mix-blend-mode: normal !important;
+  opacity: 1 !important;
+}
+
+[data-theme="light"] .hero-glow-2 {
+  background: rgba(249, 115, 22, 0.12) !important;
+  mix-blend-mode: normal !important;
+  opacity: 1 !important;
+}
+
+/* ─── Philosophy Section ─────────────────────────────────────────────────────── */
+
+.philosophy-section {
+  background: rgba(20, 20, 23, 0.5);
+}
+
+[data-theme="light"] .philosophy-section {
+  background: rgba(249, 250, 251, 0.5);
+}
+
+/* ─── Stats Card ──────────────────────────────────────────────────────────────── */
+
+.stats-card {
+  box-shadow: 0 1px 3px var(--color-shadow);
+}
+
+[data-theme="light"] .stats-card {
+  background: rgba(0, 0, 0, 0.02) !important;
+  box-shadow: 0 1px 3px var(--color-shadow), 0 4px 12px -4px var(--color-shadow);
+}
+
+/* ─── Work Section ───────────────────────────────────────────────────────────── */
+
+.work-section {
+  background: rgba(20, 20, 23, 0.3);
+}
+
+[data-theme="light"] .work-section {
+  background: rgba(249, 250, 251, 0.3);
+}
+
+/* ─── How We Work Section ────────────────────────────────────────────────────── */
+
+.how-we-work-section {
+  background: rgba(20, 20, 23, 0.5);
+}
+
+[data-theme="light"] .how-we-work-section {
+  background: rgba(249, 250, 251, 0.5);
+}
+
+/* ─── Work Type Cards ─────────────────────────────────────────────────────────── */
+
+[data-theme="light"] .work-type-card {
+  background: rgba(0, 0, 0, 0.02) !important;
+  box-shadow: 0 1px 2px var(--color-shadow);
+}
+
+/* ─── FAQ Section ────────────────────────────────────────────────────────────── */
+
+.faq-section {
+  background: rgba(20, 20, 23, 0.3);
+}
+
+[data-theme="light"] .faq-section {
+  background: rgba(249, 250, 251, 0.3);
+}
+
+/* ─── Newsletter Section ─────────────────────────────────────────────────────── */
+
+.newsletter-card {
+  box-shadow: 0 1px 3px var(--color-shadow);
+}
+
+[data-theme="light"] .newsletter-card {
+  background: rgba(0, 0, 0, 0.02) !important;
+  box-shadow: 0 1px 3px var(--color-shadow), 0 4px 12px -4px var(--color-shadow);
+}
+
+/* ─── CTA Section ────────────────────────────────────────────────────────────── */
+
+.cta-section {
+  background: rgba(20, 20, 23, 0.5);
+}
+
+[data-theme="light"] .cta-section {
+  background: rgba(249, 250, 251, 0.5);
+}
+
+.cta-glow {
+  opacity: 1;
+}
+
+[data-theme="light"] .cta-glow {
+  background: rgba(230, 126, 34, 0.15) !important;
+  opacity: 1;
+}
+
+[data-theme="light"] .cta-gradient {
+  background: linear-gradient(180deg, transparent 0%, rgba(230, 126, 34, 0.08) 100%) !important;
+}
+
+/* ─── Footer Section ─────────────────────────────────────────────────────────── */
+
+.footer-section {
+  background: #0a0a0c;
+}
+
+[data-theme="light"] .footer-section {
+  background: #f9fafb;
+}
+
+/* ─── Work Section Project Images ────────────────────────────────────────────── */
+
+.project-image-container {
+  background: #141417;
+}
+
+[data-theme="light"] .project-image-container {
+  background: #e5e7eb;
+}
+
+/* ─── About Page Cards ───────────────────────────────────────────────────────── */
+
+[data-theme="light"] .about-story-card,
+[data-theme="light"] .about-cta-card,
+[data-theme="light"] .value-card,
+[data-theme="light"] .phase-card,
+[data-theme="light"] .team-card {
+  background: rgba(0, 0, 0, 0.02) !important;
+  box-shadow: 0 1px 3px var(--color-shadow);
+}
+
+[data-theme="light"] .value-card:hover,
+[data-theme="light"] .team-card:hover {
+  background: rgba(0, 0, 0, 0.04) !important;
+  box-shadow: 0 4px 12px -4px var(--color-shadow);
+}
+
+[data-theme="light"] .social-link {
+  background: rgba(0, 0, 0, 0.03) !important;
+  border-color: var(--color-border) !important;
+}
+
+[data-theme="light"] .social-link:hover {
+  box-shadow: 0 2px 8px var(--color-shadow);
+}
+
+/* ─── Text Color Overrides for Light Mode ────────────────────────────────────── */
+
+/* Override all light gray text colors in light mode for better readability */
+[data-theme="light"] [style*="color: #9ca3af"],
+[data-theme="light"] [style*="color: rgb(156, 163, 175)"],
+[data-theme="light"] [style*='color: "#9ca3af"'],
+[data-theme="light"] p[style*="color: #9ca3af"],
+[data-theme="light"] span[style*="color: #9ca3af"],
+[data-theme="light"] div[style*="color: #9ca3af"] {
+  color: #4b5563 !important;
+}
+
+[data-theme="light"] [style*="color: #d1d5db"],
+[data-theme="light"] [style*="color: rgb(209, 213, 219)"],
+[data-theme="light"] [style*='color: "#d1d5db"'],
+[data-theme="light"] p[style*="color: #d1d5db"],
+[data-theme="light"] span[style*="color: #d1d5db"] {
+  color: #6b7280 !important;
+}
+
+[data-theme="light"] [style*="color: #a8adb5"],
+[data-theme="light"] [style*="color: rgb(168, 173, 181)"],
+[data-theme="light"] [style*='color: "#a8adb5"'] {
+  color: #6b7280 !important;
+}
+
+[data-theme="light"] [style*="color: #6b7280"],
+[data-theme="light"] [style*="color: rgb(107, 114, 128)"],
+[data-theme="light"] [style*='color: "#6b7280"'] {
+  color: #4b5563 !important;
+}
+
+/* Ensure anchor tags with gray colors also update in light mode */
+[data-theme="light"] a[style*="color: #9ca3af"]:not(:hover) {
+  color: #6b7280 !important;
+}
+
+/* Legal content text override */
+[data-theme="light"] .legal-content {
+  color: #374151 !important;
+}
+
+[data-theme="light"] .legal-content p,
+[data-theme="light"] .legal-content li {
+  color: #374151 !important;
+}
+
+/* ─── Custom Scrollbar ───────────────────────────────────────────────────────── */
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background: #333;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-accent);
 }
 
 /* ─── Cursor ─────────────────────────────────────────────────────────────────── */
@@ -184,7 +703,6 @@ body::after {
   height: 6px;
   background-color: var(--color-accent);
   border-radius: 50%;
-  /* JS sets transform: translate3d(x, y, 0) translate(-50%, -50%) */
   will-change: transform;
   opacity: 0;
   transition: opacity var(--motion-base) var(--ease-out);
@@ -206,35 +724,68 @@ body::after {
 
 .field-input {
   width: 100%;
-  background: transparent;
-  border: none;
-  border-bottom: 1px solid rgba(18, 18, 18, 0.2);
-  padding: var(--space-2) 0;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  padding: var(--space-2);
   font-family: var(--font-primary);
   font-size: var(--text-body-l);
   line-height: var(--leading-body);
   color: var(--color-text);
   outline: none;
-  transition: border-color var(--motion-base) var(--ease-out);
+  transition: all var(--motion-base) var(--ease-out);
   -webkit-appearance: none;
-  border-radius: 0;
+}
+
+[data-theme="light"] .field-input {
+  background: rgba(0, 0, 0, 0.02);
+  box-shadow: 0 1px 2px var(--color-shadow);
 }
 
 .field-input::placeholder {
-  color: var(--color-muted);
+  color: rgba(156, 163, 175, 0.6);
+}
+
+[data-theme="light"] .field-input::placeholder {
+  color: rgba(75, 85, 99, 0.5);
 }
 
 .field-input:focus {
-  border-bottom-color: var(--color-text);
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 1px var(--color-accent);
+}
+
+[data-theme="light"] .field-input:focus {
+  box-shadow: 0 0 0 2px var(--color-accent-soft), 0 1px 3px var(--color-shadow);
 }
 
 .field-label {
   display: block;
-  font-size: var(--text-meta);
+  font-size: var(--text-body-s);
   line-height: var(--leading-meta);
   font-weight: 500;
   color: var(--color-muted);
   margin-bottom: var(--space-1);
+}
+
+/* ─── Animations ─────────────────────────────────────────────────────────────── */
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.animate-pulse-slow {
+  animation: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
 /* ─── Reduced motion ─────────────────────────────────────────────────────────── */
@@ -246,5 +797,121 @@ body::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+  }
+}
+
+/* ─── Accessibility: Focus Indicators ────────────────────────────────────────── */
+
+/* Enhanced focus styles for keyboard navigation - WCAG 2.4.7 Level AA */
+*:focus {
+  outline: none;
+}
+
+*:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* Links and buttons get special focus treatment */
+a:focus-visible,
+button:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+  box-shadow: 0 0 0 4px rgba(230, 126, 34, 0.2);
+}
+
+/* Input fields focus */
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px rgba(230, 126, 34, 0.15);
+}
+
+/* Skip link styles - visible only when focused */
+.skip-link:focus {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  z-index: 9999;
+  padding: 16px 24px;
+  background: var(--color-accent);
+  color: #fff;
+  font-weight: 600;
+  border-radius: 8px;
+  text-decoration: none;
+  box-shadow: 0 4px 24px rgba(230, 126, 34, 0.6);
+}
+
+/* ─── Accessibility: Screen Reader Only ──────────────────────────────────────── */
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+.sr-only-focusable:focus {
+  position: static;
+  width: auto;
+  height: auto;
+  margin: 0;
+  overflow: visible;
+  clip: auto;
+  white-space: normal;
+}
+
+/* ─── Accessibility: Contrast and Readability ────────────────────────────────── */
+
+/* Ensure minimum contrast ratios - WCAG AA compliance */
+.text-secondary {
+  color: var(--color-muted-accessible);
+}
+
+/* Better link visibility */
+main a:not([class]) {
+  color: var(--color-accent);
+  text-decoration: underline;
+  text-decoration-skip-ink: auto;
+}
+
+main a:not([class]):hover {
+  text-decoration-thickness: 2px;
+}
+
+/* ─── Accessibility: Interactive Elements ────────────────────────────────────── */
+
+/* Ensure buttons and links have appropriate cursor */
+button,
+[role="button"],
+[type="button"],
+[type="submit"],
+a {
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Disabled state */
+button:disabled,
+[disabled] {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+/* ─── Accessibility: Motion Preferences ──────────────────────────────────────── */
+
+/* Respect prefers-reduced-motion for scroll behavior */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
   }
 }

@@ -1,19 +1,101 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Outfit } from "next/font/google";
 import { CursorDot } from "@/components/ui/CursorDot";
+import { ToastProvider } from "@/components/ui/Toast";
+import { ScrollProgress } from "@/components/ui/ScrollProgress";
+import { BackToTop } from "@/components/ui/BackToTop";
+import { SkipToContent } from "@/components/ui/SkipToContent";
+import { CookieConsent } from "@/components/ui/CookieConsent";
+import { GoogleAnalytics } from "@/components/analytics/GoogleAnalytics";
+import { ThemeProvider } from "@/lib/theme-context";
 import "./globals.css";
 
 const inter = Inter({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
+  weight: ["400", "500", "600"],
   variable: "--font-inter",
   display: "swap",
 });
 
+const outfit = Outfit({
+  subsets: ["latin"],
+  weight: ["400", "600", "800", "900"],
+  variable: "--font-outfit",
+  display: "swap",
+});
+
 export const metadata: Metadata = {
-  title: "Meet on Chai",
+  title: {
+    default: "MeetOnChai Studio | Web, App & AI Development",
+    template: "%s | MeetOnChai Studio",
+  },
   description:
-    "A small product studio. We build web and mobile software by talking things through properly — before committing to a single line of code.",
+    "Premium web development, mobile apps, AI solutions, and UI/UX design. We build MVPs, internal tools, chatbots, and scalable products that survive real users.",
+  keywords: [
+    "web development",
+    "mobile app development",
+    "AI development",
+    "chatbot development",
+    "UI/UX design",
+    "MVP development",
+    "Next.js development",
+    "React Native",
+    "conversational AI",
+    "custom software development",
+  ],
+  authors: [{ name: "MeetOnChai Studio" }],
+  creator: "MeetOnChai Studio",
+  publisher: "MeetOnChai Studio",
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"
+  ),
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    url: "/",
+    title: "MeetOnChai Studio | Web, App & AI Development",
+    description:
+      "Premium web development, mobile apps, AI solutions, and UI/UX design. We build MVPs, internal tools, chatbots, and scalable products.",
+    siteName: "MeetOnChai Studio",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "MeetOnChai Studio",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "MeetOnChai Studio | Web, App & AI Development",
+    description:
+      "Premium web development, mobile apps, AI solutions, and UI/UX design. We build MVPs, internal tools, chatbots, and scalable products.",
+    images: ["/og-image.png"],
+    creator: "@meetonchai",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+  icons: {
+    icon: "/icon.png",
+    shortcut: "/favicon.ico",
+    apple: "/apple-icon.png",
+  },
+  manifest: "/manifest.json",
 };
 
 export default function RootLayout({
@@ -22,11 +104,37 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={`${inter.variable} antialiased`}>
-          <CursorDot />
-          {children}
-        </body>
+    <html lang="en" className="scroll-smooth" suppressHydrationWarning>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  const theme = localStorage.getItem('theme') || 'dark';
+                  const effectiveTheme = theme === 'system'
+                    ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+                    : theme;
+                  document.documentElement.setAttribute('data-theme', effectiveTheme);
+                } catch (e) {}
+              })();
+            `,
+          }}
+        />
+        <GoogleAnalytics />
+      </head>
+      <body className={`${inter.variable} ${outfit.variable} antialiased`} suppressHydrationWarning>
+        <ThemeProvider>
+          <SkipToContent />
+          <ToastProvider>
+            <ScrollProgress />
+            <CursorDot />
+            {children}
+            <BackToTop />
+            <CookieConsent />
+          </ToastProvider>
+        </ThemeProvider>
+      </body>
     </html>
   );
 }
