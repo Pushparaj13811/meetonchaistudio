@@ -19,16 +19,16 @@ const caseStudies = [
     image: "/projects/oryizon.png",
     tags: ["E-Commerce", "Payment Gateway", "Inventory Management"],
   },
-  {
-    title: "SmartSwipe",
-    description:
-      "Mobile payment solution enabling merchants to accept card payments through integrated POS terminals. Features Bluetooth thermal receipt printing, real-time transaction monitoring with live status updates, full and partial refund processing, and comprehensive transaction history with advanced search and filters. Includes daily, weekly, and monthly analytics dashboard, offline transaction queuing for uninterrupted service, and secure backend synchronization. Built with enterprise-grade architecture and currently serving merchants in production.",
-    link: "https://play.google.com/store/apps/details?id=com.smartswipe.app",
-    label: "View on Play Store",
-    external: true,
-    image: "/projects/smartswipe.png",
-    tags: ["Mobile App", "POS System", "Payment Processing"],
-  },
+  // {
+  //   title: "SmartSwipe",
+  //   description:
+  //     "Mobile payment solution enabling merchants to accept card payments through integrated POS terminals. Features Bluetooth thermal receipt printing, real-time transaction monitoring with live status updates, full and partial refund processing, and comprehensive transaction history with advanced search and filters. Includes daily, weekly, and monthly analytics dashboard, offline transaction queuing for uninterrupted service, and secure backend synchronization. Built with enterprise-grade architecture and currently serving merchants in production.",
+  //   link: "https://play.google.com/store/apps/details?id=com.smartswipe.app",
+  //   label: "View on Play Store",
+  //   external: true,
+  //   image: "/projects/smartswipe.png",
+  //   tags: ["Mobile App", "POS System", "Payment Processing"],
+  // },
   {
     title: "UniPay",
     description:

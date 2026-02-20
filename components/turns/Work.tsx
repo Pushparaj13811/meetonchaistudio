@@ -16,16 +16,16 @@ const projects = [
     image: "/projects/oryizon.png",
     offset: "",
   },
-  {
-    title: "SmartSwipe",
-    description:
-      "Mobile payment solution enabling merchants to accept card payments through integrated POS terminals. Features Bluetooth thermal receipt printing, real-time transaction monitoring with live status updates, and comprehensive transaction history with advanced search and filters.",
-    link: "https://play.google.com/store/apps/details?id=com.smartswipe.app",
-    label: "View on Play Store",
-    external: true,
-    image: "/projects/smartswipe.png",
-    offset: "md:mt-8",
-  },
+  // {
+  //   title: "SmartSwipe",
+  //   description:
+  //     "Mobile payment solution enabling merchants to accept card payments through integrated POS terminals. Features Bluetooth thermal receipt printing, real-time transaction monitoring with live status updates, and comprehensive transaction history with advanced search and filters.",
+  //   link: "https://play.google.com/store/apps/details?id=com.smartswipe.app",
+  //   label: "View on Play Store",
+  //   external: true,
+  //   image: "/projects/smartswipe.png",
+  //   offset: "md:mt-8",
+  // },
 ];
 
 /**
