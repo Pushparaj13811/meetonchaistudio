@@ -3,32 +3,8 @@
 import Script from "next/script";
 import { useEffect } from "react";
 
-type ConsentStatus = "granted" | "denied";
-
-interface ConsentSettings {
-  analytics_storage: ConsentStatus;
-  ad_storage: ConsentStatus;
-  ad_user_data: ConsentStatus;
-  ad_personalization: ConsentStatus;
-  wait_for_update?: number;
-}
-
-interface CookieConsentPreferences {
-  necessary: boolean;
-  analytics: boolean;
-  marketing: boolean;
-}
-
-declare global {
-  interface Window {
-    dataLayer: unknown[];
-    gtag: (
-      command: "consent" | "js" | "config",
-      action: string | Date,
-      params?: ConsentSettings | Record<string, unknown>
-    ) => void;
-  }
-}
+import type { CookieConsentPreferences } from "@/types/analytics";
+import "@/types/analytics";
 
 export function GoogleAnalytics() {
   const GA_ID = process.env.NEXT_PUBLIC_GA_ID;
@@ -47,6 +23,7 @@ export function GoogleAnalytics() {
             ad_storage: consent.marketing ? "granted" : "denied",
             ad_user_data: consent.marketing ? "granted" : "denied",
             ad_personalization: consent.marketing ? "granted" : "denied",
+            functionality_storage: consent.functionality ? "granted" : "denied",
           });
         } catch (error) {
           if (error instanceof Error) {

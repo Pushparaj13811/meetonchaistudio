@@ -3,6 +3,7 @@
 import { useState, useEffect, useActionState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { bookSlot, type FormState, type BookingConfirmation } from "@/app/talk/actions";
+import { analytics } from "@/lib/analytics";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -76,6 +77,11 @@ export function BookingCalendar({ onSuccess, onCancel }: BookingCalendarProps) {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
+  // Track booking form view on mount
+  useEffect(() => {
+    analytics.viewBookingForm("talk_page");
+  }, []);
+
   // ── Calendar state ──────────────────────────────────────────────────────────
   const [viewYear, setViewYear] = useState(today.getFullYear());
   const [viewMonth, setViewMonth] = useState(today.getMonth());
@@ -94,6 +100,9 @@ export function BookingCalendar({ onSuccess, onCancel }: BookingCalendarProps) {
   // Advance to success when form submits OK
   useEffect(() => {
     if (formState.ok && formState.booking) {
+      // Track successful booking
+      const bookingId = `${formState.booking.date}_${formState.booking.time}`;
+      analytics.bookingConfirmed(bookingId);
       onSuccess(formState.booking);
     }
   }, [formState.ok, formState.booking, onSuccess]);
@@ -132,6 +141,11 @@ export function BookingCalendar({ onSuccess, onCancel }: BookingCalendarProps) {
   function handleTimeClick(timeValue: string) {
     // No need to check bookedTimes since we only show available slots
     setSelectedTime(timeValue);
+
+    // Track time slot selection
+    if (selectedDate) {
+      analytics.selectTimeSlot(toDateString(selectedDate), timeValue);
+    }
   }
 
   // ── Month navigation ─────────────────────────────────────────────────────────
@@ -466,6 +480,17 @@ export function BookingCalendar({ onSuccess, onCancel }: BookingCalendarProps) {
                     >
                       <form
                         action={formAction}
+                        onSubmit={() => {
+                          // Track booking submission
+                          if (selectedDate && selectedTime) {
+                            analytics.submitBooking({
+                              name: "",
+                              email: "",
+                              date: toDateString(selectedDate),
+                              time: selectedTime,
+                            });
+                          }
+                        }}
                         style={{
                           display: "flex",
                           flexDirection: "column",

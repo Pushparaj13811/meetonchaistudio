@@ -3,6 +3,7 @@ import { Inter, Outfit } from "next/font/google";
 import { ToastProvider } from "@/components/ui/Toast";
 import { SkipToContent } from "@/components/ui/SkipToContent";
 import { GoogleAnalytics } from "@/components/analytics/GoogleAnalytics";
+import { AnalyticsTracking } from "@/components/analytics/AnalyticsTracking";
 import { ThemeProvider } from "@/lib/theme-context";
 import { ClientOnlyComponents } from "@/components/layout/ClientOnlyComponents";
 import "./globals.css";
@@ -133,6 +134,7 @@ export default function RootLayout({
           <SkipToContent />
           <ToastProvider>
             <ClientOnlyComponents />
+            <AnalyticsTracking />
             {children}
           </ToastProvider>
         </ThemeProvider>

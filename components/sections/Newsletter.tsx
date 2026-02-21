@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { fadeUp, fadeUpTransition, viewportOnce } from "@/lib/motion";
 import { InlineSpinner } from "@/components/ui/LoadingSpinner";
 import { Mail } from "lucide-react";
+import { analytics } from "@/lib/analytics";
 
 /**
  * Newsletter Subscription Component
@@ -28,6 +29,10 @@ export function Newsletter() {
 
       setStatus("success");
       setMessage("Thanks for subscribing! Check your email for confirmation.");
+
+      // Track newsletter signup
+      analytics.newsletterSignup("footer_section");
+
       setEmail("");
 
       // Reset message after 5 seconds
@@ -38,6 +43,9 @@ export function Newsletter() {
     } catch (error) {
       setStatus("error");
       setMessage("Something went wrong. Please try again.");
+
+      // Track error
+      analytics.error("Newsletter signup failed", "Newsletter component");
     } finally {
       setLoading(false);
     }
