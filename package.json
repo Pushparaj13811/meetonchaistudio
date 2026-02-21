@@ -14,8 +14,7 @@
     "next": "16.1.6",
     "react": "19.2.3",
     "react-dom": "19.2.3",
-    "resend": "^6.9.2",
-    "tech-stack-icons": "^3.5.8"
+    "resend": "^6.9.2"
   },
   "devDependencies": {
     "@next/bundle-analyzer": "^16.1.6",

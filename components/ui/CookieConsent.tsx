@@ -21,21 +21,37 @@ export function CookieConsent() {
     }
   }, []);
 
+  const updateGoogleConsent = (analytics: boolean, marketing: boolean) => {
+    // Update Google Consent Mode v2
+    if (typeof window !== "undefined" && (window as any).gtag) {
+      (window as any).gtag("consent", "update", {
+        analytics_storage: analytics ? "granted" : "denied",
+        ad_storage: marketing ? "granted" : "denied",
+        ad_user_data: marketing ? "granted" : "denied",
+        ad_personalization: marketing ? "granted" : "denied",
+      });
+    }
+  };
+
   const acceptAll = () => {
-    localStorage.setItem("cookie-consent", JSON.stringify({
+    const consent = {
       necessary: true,
       analytics: true,
       marketing: false,
-    }));
+    };
+    localStorage.setItem("cookie-consent", JSON.stringify(consent));
+    updateGoogleConsent(true, false);
     setShow(false);
   };
 
   const acceptNecessary = () => {
-    localStorage.setItem("cookie-consent", JSON.stringify({
+    const consent = {
       necessary: true,
       analytics: false,
       marketing: false,
-    }));
+    };
+    localStorage.setItem("cookie-consent", JSON.stringify(consent));
+    updateGoogleConsent(false, false);
     setShow(false);
   };
 

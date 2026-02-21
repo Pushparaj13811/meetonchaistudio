@@ -6,7 +6,7 @@ import {
   fadeUpTransition,
   viewportOnce,
 } from "@/lib/motion";
-import StackIcon from "tech-stack-icons";
+import Image from "next/image";
 const technologies = [
   { name: "Next.js", icon: "nextjs", color: "#000000" },
   { name: "React", icon: "react", color: "#61DAFB" },
@@ -155,7 +155,13 @@ export function TechStack() {
                   alignItems: "center",
                   justifyContent: "center",
                 }}>
-                  <StackIcon name={tech.icon as any} style={{ maxWidth: "100%", maxHeight: "100%", width: "auto", height: "auto" }} />
+                  <Image
+                    src={`/tech-stack/${tech.icon}.svg`}
+                    alt={tech.name}
+                    width={48}
+                    height={48}
+                    style={{ width: "auto", height: "auto", maxWidth: "100%", maxHeight: "100%" }}
+                  />
                 </div>
               </div>
 
