@@ -296,8 +296,6 @@ export function Navigation() {
           bottom: 0,
           width: "100%",
           maxWidth: "400px",
-          backdropFilter: "blur(20px)",
-          WebkitBackdropFilter: "blur(20px)",
           zIndex: 55,
           padding: "100px 32px 32px",
           display: "flex",
