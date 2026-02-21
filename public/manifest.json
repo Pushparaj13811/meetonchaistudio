@@ -1,24 +1,76 @@
 {
-  "name": "MeetOnChai Studio",
+  "name": "MeetOnChai Studio - Web, App & AI Development",
   "short_name": "MeetOnChai",
-  "description": "Premium web development, mobile apps, AI solutions, and UI/UX design studio",
+  "description": "Premium web development, mobile apps, AI solutions, and UI/UX design studio. We build MVPs, internal tools, and scalable products.",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
   "background_color": "#0a0a0c",
   "theme_color": "#e67e22",
   "orientation": "portrait-primary",
+  "categories": ["business", "productivity", "developer tools"],
+  "lang": "en",
+  "dir": "ltr",
   "icons": [
     {
       "src": "/icon.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "/icon.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
     },
     {
       "src": "/logo-512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "/logo-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/og-image.png",
+      "sizes": "1200x630",
+      "type": "image/png",
+      "form_factor": "wide"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Book Consultation",
+      "short_name": "Book",
+      "description": "Schedule a free consultation call",
+      "url": "/talk",
+      "icons": [
+        {
+          "src": "/icon.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "View Work",
+      "short_name": "Portfolio",
+      "description": "See our latest projects",
+      "url": "/work",
+      "icons": [
+        {
+          "src": "/icon.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
     }
   ]
 }

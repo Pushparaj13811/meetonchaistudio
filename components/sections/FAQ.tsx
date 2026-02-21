@@ -257,7 +257,7 @@ export function FAQ() {
               e.currentTarget.style.gap = "8px";
             }}
           >
-            Let's talk about it
+            Let&apos;s talk about it
             <svg
               width="20"
               height="20"
