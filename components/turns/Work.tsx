@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { fadeUp, fadeUpTransition, viewportOnce, staggerContainer, staggerItem } from "@/lib/motion";
 import { ProjectImage } from "@/components/ui/ProjectImage";
+import { analytics } from "@/lib/analytics";
 
 const projects = [
   {
@@ -219,6 +220,7 @@ export default function Work() {
 
               <a
                 href={project.link}
+                onClick={() => analytics.viewProject(project.title, "e-commerce")}
                 target={project.external ? "_blank" : undefined}
                 rel={project.external ? "noopener noreferrer" : undefined}
                 style={{

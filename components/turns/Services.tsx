@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { fadeUp, fadeUpTransition, viewportOnce, staggerContainer, staggerItem } from "@/lib/motion";
+import { analytics } from "@/lib/analytics";
 
 const services = [
   {
@@ -149,12 +150,14 @@ export default function Services() {
             <motion.div
               key={service.title}
               variants={staggerItem}
+              onClick={() => analytics.serviceInterest(service.title, "click")}
               className="glass-card"
               style={{
                 padding: "var(--space-4)",
                 borderRadius: "24px",
                 position: "relative",
                 overflow: index === 2 ? "hidden" : "visible",
+                cursor: "pointer",
               }}
             >
               {index === 3 && (

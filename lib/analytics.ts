@@ -88,10 +88,18 @@ export const analytics = {
   },
 
   // Navigation
-  externalLinkClick: (url: string, linkType: string) => {
+  navigationClick: (linkName: string, location: string) => {
+    trackEvent("navigation_click", {
+      link_name: linkName,
+      location,
+    });
+  },
+
+  externalLinkClick: (linkName: string, url: string, location: string) => {
     trackEvent("click", {
+      link_name: linkName,
       link_url: url,
-      link_type: linkType,
+      location,
       outbound: true,
     });
   },
@@ -170,6 +178,14 @@ export const analytics = {
     trackEvent("social_interaction", {
       platform,
       action,
+    });
+  },
+
+  socialMediaClick: (platform: string, location: string) => {
+    trackEvent("social_interaction", {
+      platform,
+      action: "click",
+      location,
     });
   },
 

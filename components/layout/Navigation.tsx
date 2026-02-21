@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
+import { analytics } from "@/lib/analytics";
 
 /**
  * Fixed navigation bar with glassmorphism effect
@@ -67,6 +68,7 @@ export function Navigation() {
           {/* Logo */}
           <Link
             href="/"
+            onClick={() => analytics.navigationClick("Logo", "header")}
             style={{
               display: "flex",
               alignItems: "center",
@@ -120,6 +122,7 @@ export function Navigation() {
           >
             <a
               href="/#services"
+              onClick={() => analytics.navigationClick("Services", "header")}
               style={{
                 fontSize: "0.875rem",
                 fontWeight: 500,
@@ -137,6 +140,7 @@ export function Navigation() {
             </a>
             <Link
               href="/work"
+              onClick={() => analytics.navigationClick("Work", "header")}
               style={{
                 fontSize: "0.875rem",
                 fontWeight: 500,
@@ -154,6 +158,7 @@ export function Navigation() {
             </Link>
             <Link
               href="/about"
+              onClick={() => analytics.navigationClick("About", "header")}
               style={{
                 fontSize: "0.875rem",
                 fontWeight: 500,
@@ -171,6 +176,7 @@ export function Navigation() {
             </Link>
             <a
               href="/#testimonials"
+              onClick={() => analytics.navigationClick("Testimonials", "header")}
               style={{
                 fontSize: "0.875rem",
                 fontWeight: 500,
@@ -189,6 +195,7 @@ export function Navigation() {
             <ThemeToggle />
             <Link
               href="/talk"
+              onClick={() => analytics.ctaClick("Lets Talk", "header")}
               style={{
                 backgroundColor: "var(--color-accent)",
                 color: "#fff",
@@ -301,7 +308,10 @@ export function Navigation() {
       >
         <a
           href="/#services"
-          onClick={() => setMobileMenuOpen(false)}
+          onClick={() => {
+            analytics.navigationClick("Services", "mobile_menu");
+            setMobileMenuOpen(false);
+          }}
           style={{
             fontSize: "1.5rem",
             fontWeight: 600,
@@ -321,7 +331,10 @@ export function Navigation() {
         </a>
         <Link
           href="/work"
-          onClick={() => setMobileMenuOpen(false)}
+          onClick={() => {
+            analytics.navigationClick("Work", "mobile_menu");
+            setMobileMenuOpen(false);
+          }}
           style={{
             fontSize: "1.5rem",
             fontWeight: 600,
@@ -341,7 +354,10 @@ export function Navigation() {
         </Link>
         <Link
           href="/about"
-          onClick={() => setMobileMenuOpen(false)}
+          onClick={() => {
+            analytics.navigationClick("About", "mobile_menu");
+            setMobileMenuOpen(false);
+          }}
           style={{
             fontSize: "1.5rem",
             fontWeight: 600,
@@ -361,7 +377,10 @@ export function Navigation() {
         </Link>
         <a
           href="/#testimonials"
-          onClick={() => setMobileMenuOpen(false)}
+          onClick={() => {
+            analytics.navigationClick("Testimonials", "mobile_menu");
+            setMobileMenuOpen(false);
+          }}
           style={{
             fontSize: "1.5rem",
             fontWeight: 600,
@@ -381,7 +400,10 @@ export function Navigation() {
         </a>
         <Link
           href="/talk"
-          onClick={() => setMobileMenuOpen(false)}
+          onClick={() => {
+            analytics.ctaClick("Lets Talk", "mobile_menu");
+            setMobileMenuOpen(false);
+          }}
           style={{
             backgroundColor: "var(--color-accent)",
             color: "#fff",

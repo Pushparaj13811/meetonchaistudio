@@ -153,7 +153,7 @@ export function CookieConsent() {
               }}
             >
               We use cookies to enhance your browsing experience, analyze site
-              traffic, and remember your preferences. Choose your preferences below.
+              traffic, and remember your preferences. Necessary cookies are always required for the site to work.
             </p>
 
             <div
@@ -239,7 +239,7 @@ export function CookieConsent() {
                   e.currentTarget.style.color = "rgba(255, 255, 255, 0.6)";
                 }}
               >
-                Reject All
+                Necessary Only
               </button>
             </div>
 
@@ -355,7 +355,7 @@ export function CookieConsent() {
                   cursor: "pointer",
                 }}
               >
-                Reject All
+                Necessary Only
               </button>
               <button
                 onClick={savePreferences}

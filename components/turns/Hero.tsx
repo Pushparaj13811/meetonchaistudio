@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { Navigation } from "@/components/layout/Navigation";
 import { ResponsiveImage } from "@/components/ui/ResponsiveImage";
+import { analytics } from "@/lib/analytics";
 
 /**
  * Hero Section
@@ -124,6 +125,7 @@ export default function Hero() {
               >
                 <Link
                   href="/talk"
+                  onClick={() => analytics.ctaClick("Lets Grab a Chai", "hero")}
                   style={{
                     display: "inline-flex",
                     justifyContent: "center",
@@ -157,6 +159,7 @@ export default function Hero() {
 
                 <a
                   href="#work"
+                  onClick={() => analytics.ctaClick("View Our Work", "hero")}
                   style={{
                     display: "inline-flex",
                     justifyContent: "center",

@@ -1,5 +1,7 @@
 "use client";
 
+import { analytics } from "@/lib/analytics";
+
 /**
  * Footer
  *
@@ -60,6 +62,7 @@ export default function Footer() {
             <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-1)", alignItems: "center" }}>
               <a
                 href="mailto:hello@meetonchai.com"
+                onClick={() => analytics.externalLinkClick("Email", "hello@meetonchai.com", "footer")}
                 style={{
                   fontSize: "0.875rem",
                   color: "var(--color-text-secondary)",
@@ -77,6 +80,7 @@ export default function Footer() {
               <div style={{ display: "flex", gap: "var(--space-2)", fontSize: "0.875rem", color: "var(--color-text-secondary)", flexWrap: "wrap", justifyContent: "center" }}>
                 <a
                   href="tel:+9779804301484"
+                  onClick={() => analytics.externalLinkClick("Phone", "+977 9804301484", "footer")}
                   style={{
                     color: "var(--color-text-secondary)",
                     transition: "color var(--motion-base) var(--ease-out)",
@@ -93,6 +97,7 @@ export default function Footer() {
                 <span>·</span>
                 <a
                   href="tel:+917635022185"
+                  onClick={() => analytics.externalLinkClick("Phone", "+91 7635022185", "footer")}
                   style={{
                     color: "var(--color-text-secondary)",
                     transition: "color var(--motion-base) var(--ease-out)",
@@ -122,6 +127,7 @@ export default function Footer() {
           >
             <a
               href="/about"
+              onClick={() => analytics.navigationClick("About", "footer")}
               style={{
                 fontSize: "0.875rem",
                 color: "var(--color-text-secondary)",
@@ -138,6 +144,7 @@ export default function Footer() {
             </a>
             <a
               href="/privacy"
+              onClick={() => analytics.navigationClick("Privacy Policy", "footer")}
               style={{
                 fontSize: "0.875rem",
                 color: "var(--color-text-secondary)",
@@ -154,6 +161,7 @@ export default function Footer() {
             </a>
             <a
               href="/terms"
+              onClick={() => analytics.navigationClick("Terms of Service", "footer")}
               style={{
                 fontSize: "0.875rem",
                 color: "var(--color-text-secondary)",
@@ -170,6 +178,7 @@ export default function Footer() {
             </a>
             <a
               href="#"
+              onClick={() => analytics.socialMediaClick("LinkedIn", "footer")}
               style={{
                 fontSize: "0.875rem",
                 color: "var(--color-text-secondary)",
@@ -186,6 +195,7 @@ export default function Footer() {
             </a>
             <a
               href="#"
+              onClick={() => analytics.socialMediaClick("Dribbble", "footer")}
               style={{
                 fontSize: "0.875rem",
                 color: "var(--color-text-secondary)",
@@ -202,6 +212,7 @@ export default function Footer() {
             </a>
             <a
               href="#"
+              onClick={() => analytics.socialMediaClick("GitHub", "footer")}
               style={{
                 fontSize: "0.875rem",
                 color: "var(--color-text-secondary)",
