@@ -10,7 +10,6 @@ import { motion, AnimatePresence } from "framer-motion";
  */
 export function CookieConsent() {
   const [show, setShow] = useState(false);
-  const [showPreferences, setShowPreferences] = useState(false);
 
   useEffect(() => {
     // Check if user has already given consent
@@ -23,8 +22,8 @@ export function CookieConsent() {
 
   const updateGoogleConsent = (analytics: boolean, marketing: boolean) => {
     // Update Google Consent Mode v2
-    if (typeof window !== "undefined" && (window as any).gtag) {
-      (window as any).gtag("consent", "update", {
+    if (typeof window !== "undefined" && window.gtag) {
+      window.gtag("consent", "update", {
         analytics_storage: analytics ? "granted" : "denied",
         ad_storage: marketing ? "granted" : "denied",
         ad_user_data: marketing ? "granted" : "denied",
@@ -97,7 +96,7 @@ export function CookieConsent() {
             }}
           >
             We use cookies to enhance your browsing experience and analyze our
-            traffic. By clicking "Accept All", you consent to our use of cookies.
+            traffic. By clicking &rdquo;Accept All&rdquo;, you consent to our use of cookies.
           </p>
 
           <div
