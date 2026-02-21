@@ -294,6 +294,8 @@ export function Navigation() {
           top: 0,
           right: 0,
           bottom: 0,
+          left: "auto",
+          height: "100dvh",
           width: "100%",
           maxWidth: "400px",
           zIndex: 55,
@@ -302,6 +304,7 @@ export function Navigation() {
           flexDirection: "column",
           gap: "var(--space-2)",
           pointerEvents: mobileMenuOpen ? "auto" : "none",
+          overflow: "auto",
         }}
       >
         <a
