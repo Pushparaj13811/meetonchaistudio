@@ -34,31 +34,13 @@ export function GoogleAnalytics() {
   const GA_ID = process.env.NEXT_PUBLIC_GA_ID;
 
   useEffect(() => {
-    // Initialize consent mode first
-    if (typeof window !== "undefined") {
-      window.dataLayer = window.dataLayer || [];
-      window.gtag = function gtag(
-        command: "consent" | "js" | "config",
-        action: string | Date,
-        params?: Record<string, unknown> | ConsentSettings
-      ) {
-        window.dataLayer.push([command, action, params]);
-      };
-
-      // Default consent to denied (GDPR compliant)
-      window.gtag("consent", "default", {
-        analytics_storage: "denied",
-        ad_storage: "denied",
-        ad_user_data: "denied",
-        ad_personalization: "denied",
-        wait_for_update: 500,
-      });
-
-      // Check if user has previously given consent
+    // Check if user has previously given consent and update
+    if (typeof window !== "undefined" && window.gtag) {
       const consentStr = localStorage.getItem("cookie-consent");
       if (consentStr) {
         try {
           const consent = JSON.parse(consentStr) as CookieConsentPreferences;
+          console.log("[GA Consent] Updating from localStorage:", consent);
           // Update consent based on user's previous choice
           window.gtag("consent", "update", {
             analytics_storage: consent.analytics ? "granted" : "denied",
@@ -68,9 +50,11 @@ export function GoogleAnalytics() {
           });
         } catch (error) {
           if (error instanceof Error) {
-            console.error("Failed to parse consent:", error.message);
+            console.error("[GA Consent] Failed to parse consent:", error.message);
           }
         }
+      } else {
+        console.log("[GA Consent] No previous consent found");
       }
     }
   }, []);
@@ -82,6 +66,28 @@ export function GoogleAnalytics() {
 
   return (
     <>
+      {/* Google Consent Mode v2 - Must load FIRST */}
+      <Script
+        id="google-consent-init"
+        strategy="afterInteractive"
+        dangerouslySetInnerHTML={{
+          __html: `
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+
+            gtag('consent', 'default', {
+              'analytics_storage': 'denied',
+              'ad_storage': 'denied',
+              'ad_user_data': 'denied',
+              'ad_personalization': 'denied',
+              'wait_for_update': 500
+            });
+
+            console.log('[GA Consent] Default consent set to denied');
+          `,
+        }}
+      />
+
       {/* Google Analytics */}
       <Script
         strategy="afterInteractive"
@@ -98,6 +104,8 @@ export function GoogleAnalytics() {
             gtag('config', '${GA_ID}', {
               page_path: window.location.pathname,
             });
+
+            console.log('[GA] Initialized with ID: ${GA_ID}');
           `,
         }}
       />

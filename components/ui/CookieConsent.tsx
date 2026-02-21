@@ -22,14 +22,36 @@ export function CookieConsent() {
 
   const updateGoogleConsent = (analytics: boolean, marketing: boolean) => {
     // Update Google Consent Mode v2
-    if (typeof window !== "undefined" && window.gtag) {
-      window.gtag("consent", "update", {
-        analytics_storage: analytics ? "granted" : "denied",
-        ad_storage: marketing ? "granted" : "denied",
-        ad_user_data: marketing ? "granted" : "denied",
-        ad_personalization: marketing ? "granted" : "denied",
-      });
-    }
+    // Wait for gtag to be available (max 3 seconds)
+    let attempts = 0;
+    const maxAttempts = 30;
+
+    const updateConsent = () => {
+      if (typeof window !== "undefined") {
+        if (window.gtag) {
+          console.log("[Cookie Consent] Updating consent:", {
+            analytics,
+            marketing,
+          });
+          window.gtag("consent", "update", {
+            analytics_storage: analytics ? "granted" : "denied",
+            ad_storage: marketing ? "granted" : "denied",
+            ad_user_data: marketing ? "granted" : "denied",
+            ad_personalization: marketing ? "granted" : "denied",
+          });
+        } else if (attempts < maxAttempts) {
+          // Retry after a short delay if gtag isn't loaded yet
+          attempts++;
+          console.log(
+            `[Cookie Consent] gtag not ready, retrying (${attempts}/${maxAttempts})...`
+          );
+          setTimeout(updateConsent, 100);
+        } else {
+          console.error("[Cookie Consent] gtag failed to load after 3 seconds");
+        }
+      }
+    };
+    updateConsent();
   };
 
   const acceptAll = () => {
